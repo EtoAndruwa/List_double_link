@@ -14,6 +14,7 @@ int main()
     push_before(&list_str, 2, 30);
     push_before(&list_str, 1, 40);
     list_dump(&list_str, DEF_FUNC_NAME, DEF_FUNC_LINE, DEF_FUNC_FILE);
+    print_node(&list_str, 2);
 
     list_dtor(&list_str);
 

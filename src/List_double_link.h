@@ -53,7 +53,7 @@ void safe_exit(list* list_str, const char* FUNC_NAME, size_t FUNC_LINE, const ch
 
 size_t list_realloc(list* list_str);
 
-void print_node(list* list_str);
+void print_node(list* list_str, size_t node_index);
 
 void search_empty_node(list* list_str);
 

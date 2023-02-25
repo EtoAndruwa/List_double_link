@@ -94,8 +94,28 @@ void delete_node(list* list_str)
 
 }
 
-void print_node(list* list_str)
+void print_node(list* list_str, size_t node_index)
 {
+    if(list_str->nodes_arr[node_index].next != -1 && node_index > 0 && node_index < list_str->max_num_of_nodes)
+    {
+        printf("\n==========NEXT_NODE==========\n");
+        printf("Value: %d\n", list_str->nodes_arr[list_str->nodes_arr[node_index].next].value);
+        printf("==========NEXT_NODE==========\n");
+
+        printf("\n==========THIS_NODE==========\n");
+        printf("Next node index: %ld\n", list_str->nodes_arr[node_index].next);
+        printf("Value: %d\n", list_str->nodes_arr[node_index].value);
+        printf("Previous node index: %ld\n", list_str->nodes_arr[node_index].prev);
+        printf("==========THIS_NODE==========\n");
+
+        printf("\n==========PREV_NODE==========\n");
+        printf("Value: %d\n", list_str->nodes_arr[list_str->nodes_arr[node_index].prev].value);
+        printf("==========PREV_NODE==========\n");
+    }
+    else
+    {
+        printf("Node with index = %ld doesn't exist. Please, try again\n", node_index);
+    }
 }
 
 void search_empty_node(list* list_str)
