@@ -13,7 +13,11 @@ const char* enum_to_string(size_t error_code)
     case ERR_CALLOC_NODE_ARR:
         return "ERR_CALLOC_NODE_ARR";
     case ERR_REALLOC_NODE_ARR:
-        return "ERR_CALLOCERR_REALLOC_NODE_ARR_NODE_ARR";
+        return "ERR_REALLOC_NODE_ARR";
+    case ERR_LIST_FULL:
+        return "ERR_LIST_FULL";
+    case ERR_LIST_EMPTY:
+        return "ERR_LIST_EMPTY";
     default:
         return "NEW_ERROR_CODE";
     }

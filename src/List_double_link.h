@@ -19,9 +19,8 @@ enum error_codes
     ERR_CLOSE_DUMP       = 2,
     ERR_CALLOC_NODE_ARR  = 3,
     ERR_REALLOC_NODE_ARR = 4,
-
-
-
+    ERR_LIST_FULL        = 5,
+    ERR_LIST_EMPTY       = 6,
 };
 
 typedef struct node
@@ -34,11 +33,12 @@ typedef struct node
 
 typedef struct list
 {
-    size_t head_node = 0;
-    node* nodes_arr = nullptr;
+    size_t head_node        = 0;
+    node* nodes_arr         = nullptr;
     size_t cur_num_of_nodes = 0;
     size_t max_num_of_nodes = 0;
-    size_t error_code   = LIST_OK;
+    size_t error_code       = LIST_OK;
+    size_t empty_node_index = 0;
 }list;
 
 const char* enum_to_string(size_t error_code);
@@ -50,5 +50,13 @@ void list_dtor(list* list_str);
 void list_dump(list* list_str, const char* FUNC_NAME, size_t FUNC_LINE, const char* FUNC_FILE);
 
 void safe_exit(list* list_str, const char* FUNC_NAME, size_t FUNC_LINE, const char* FUNC_FILE, size_t error_code);
+
+size_t list_realloc(list* list_str);
+
+void print_node(list* list_str);
+
+void search_empty_node(list* list_str);
+
+void push_after(list* list_str, size_t node_index, node_val_type value);
 
 #endif

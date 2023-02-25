@@ -42,10 +42,11 @@ void list_dtor(list* list_str)
     list_str->head_node = POISON;
     list_str->error_code = POISON;
     list_str->cur_num_of_nodes = POISON;
+    list_str->empty_node_index = POISON;
     list_str->max_num_of_nodes = POISON;
 }
 
-void list_realloc(list* list_str)
+size_t list_realloc(list* list_str)
 {
     if(list_str->cur_num_of_nodes == list_str->max_num_of_nodes)
     {   
@@ -54,11 +55,14 @@ void list_realloc(list* list_str)
         if(realloc_ptr == nullptr)
         {
             printf("ERROR: list cannot be realloced, please, delete old nodes\n");
+            list_str->error_code = ERR_LIST_FULL;
+            return 1;
         }
         else
         {
             list_str->max_num_of_nodes *= 2;
             list_str->nodes_arr = realloc_ptr;
+            return 2;
         }
     }
 }
