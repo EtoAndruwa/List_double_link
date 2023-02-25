@@ -48,11 +48,43 @@ void push_after(list* list_str, size_t node_index, node_val_type value)
     }
 }
 
-void push_before(list* list_str)
+void push_before(list* list_str, size_t node_index, node_val_type value)
 {
-
-
-
+    if(list_realloc(list_str) == 1)
+    {
+        list_str->nodes_arr[list_str->cur_num_of_nodes].value = value;
+        list_str->nodes_arr[list_str->cur_num_of_nodes].next = node_index;
+        list_str->nodes_arr[list_str->cur_num_of_nodes].prev = list_str->nodes_arr[node_index].prev;
+        list_str->nodes_arr[list_str->nodes_arr[node_index].prev].next = list_str->cur_num_of_nodes;
+        list_str->nodes_arr[node_index].prev = list_str->cur_num_of_nodes;
+        list_str->cur_num_of_nodes++;
+    }
+    else
+    {
+        search_empty_node(list_str);
+        if(list_str->nodes_arr[node_index].next != -1 && list_str->cur_num_of_nodes != 1)
+        {   
+            list_str->nodes_arr[list_str->empty_node_index].value = value;
+            list_str->nodes_arr[list_str->empty_node_index].next = node_index;
+            list_str->nodes_arr[list_str->empty_node_index].prev = list_str->nodes_arr[node_index].prev;
+            list_str->nodes_arr[list_str->nodes_arr[node_index].prev].next = list_str->empty_node_index;
+            list_str->nodes_arr[node_index].prev = list_str->empty_node_index;
+            list_str->cur_num_of_nodes++;
+        }
+        else if(list_str->nodes_arr[node_index].next != -1 && list_str->cur_num_of_nodes == 1)
+        {
+            list_str->nodes_arr[list_str->empty_node_index].value = value;
+            list_str->nodes_arr[list_str->empty_node_index].next = list_str->head_node;
+            list_str->nodes_arr[list_str->empty_node_index].prev = list_str->head_node;
+            list_str->nodes_arr[list_str->head_node].next = list_str->empty_node_index;
+            list_str->nodes_arr[list_str->head_node].prev = list_str->empty_node_index;
+            list_str->cur_num_of_nodes++;
+        }
+        else    
+        {
+            printf("Node doesn't exist\n");
+        }
+    }
 }
 
 

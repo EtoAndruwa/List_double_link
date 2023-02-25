@@ -59,4 +59,6 @@ void search_empty_node(list* list_str);
 
 void push_after(list* list_str, size_t node_index, node_val_type value);
 
+void push_before(list* list_str, size_t node_index, node_val_type value);
+
 #endif

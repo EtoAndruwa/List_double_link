@@ -2,7 +2,7 @@
 
 void list_dump(list* list_str, const char* FUNC_NAME, size_t FUNC_LINE, const char* FUNC_FILE)
 {
-    FILE* dump_log = fopen(FILE_DUMP_NAME, "wb");
+    FILE* dump_log = fopen(FILE_DUMP_NAME, "a+");
 
     if(dump_log == nullptr)
     {
@@ -13,7 +13,7 @@ void list_dump(list* list_str, const char* FUNC_NAME, size_t FUNC_LINE, const ch
     }
     else
     {
-        fprintf(dump_log, "====================STRUCT_DATA====================\n");
+        fprintf(dump_log, "\n\n====================STRUCT_DATA====================\n");
         fprintf(dump_log, "Struct error code: %ld (%s)\n", list_str->error_code, enum_to_string(list_str->error_code));
         fprintf(dump_log, "Head node index: %ld\n",list_str->head_node);
         fprintf(dump_log, "Current number of nodes in list: %ld\n", list_str->cur_num_of_nodes);
