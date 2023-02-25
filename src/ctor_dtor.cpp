@@ -62,6 +62,14 @@ size_t list_realloc(list* list_str)
         {
             list_str->max_num_of_nodes *= 2;
             list_str->nodes_arr = realloc_ptr;
+
+            for(size_t i = list_str->cur_num_of_nodes; i < list_str->max_num_of_nodes; i++)
+            {
+                list_str->nodes_arr[i].next = -1;
+                list_str->nodes_arr[i].prev = -1;
+                list_str->nodes_arr[i].value = POISON;
+            }
+
             return 2;
         }
     }
