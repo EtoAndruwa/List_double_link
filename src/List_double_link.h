@@ -36,7 +36,8 @@ typedef struct list
 {
     size_t head_node = 0;
     node* nodes_arr = nullptr;
-    size_t num_of_nodes = 0;
+    size_t cur_num_of_nodes = 0;
+    size_t max_num_of_nodes = 0;
     size_t error_code   = LIST_OK;
 }list;
 

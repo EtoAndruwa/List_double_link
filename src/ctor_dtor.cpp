@@ -2,12 +2,20 @@
 
 void list_ctor(list* list_str)
 {
-    list_str->num_of_nodes = 1;
-    list_str->nodes_arr = (node*)calloc(list_str->num_of_nodes, sizeof(node));
+    list_str->cur_num_of_nodes = 1;
+    list_str->max_num_of_nodes = 4;
+    list_str->nodes_arr = (node*)calloc(list_str->max_num_of_nodes, sizeof(node));
 
     if(list_str->nodes_arr == nullptr)
     {
         safe_exit(list_str, DEF_FUNC_NAME, DEF_FUNC_LINE, DEF_FUNC_FILE, ERR_CALLOC_NODE_ARR);
+    }
+
+    for(size_t i = 1; i < list_str->max_num_of_nodes; i++)
+    {
+        list_str->nodes_arr[i].next = -1;
+        list_str->nodes_arr[i].prev = -1;
+        list_str->nodes_arr[i].value = POISON;
     }
 
     list_str->head_node = 0;
@@ -21,7 +29,7 @@ void list_dtor(list* list_str)
 {
     list_dump(list_str, DEF_FUNC_NAME, DEF_FUNC_LINE, DEF_FUNC_FILE);
 
-    for(size_t i = 0; i < list_str->num_of_nodes; i++)
+    for(size_t i = 0; i < list_str->cur_num_of_nodes; i++)
     {
         list_str->nodes_arr[i].next = POISON;
         list_str->nodes_arr[i].prev = POISON;
@@ -33,5 +41,24 @@ void list_dtor(list* list_str)
 
     list_str->head_node = POISON;
     list_str->error_code = POISON;
-    list_str->num_of_nodes = POISON;
+    list_str->cur_num_of_nodes = POISON;
+    list_str->max_num_of_nodes = POISON;
+}
+
+void list_realloc(list* list_str)
+{
+    if(list_str->cur_num_of_nodes == list_str->max_num_of_nodes)
+    {   
+        node* realloc_ptr = (node*)realloc(list_str->nodes_arr, list_str->max_num_of_nodes * 2 * sizeof(node));
+
+        if(realloc_ptr == nullptr)
+        {
+            printf("ERROR: list cannot be realloced, please, delete old nodes\n");
+        }
+        else
+        {
+            list_str->max_num_of_nodes *= 2;
+            list_str->nodes_arr = realloc_ptr;
+        }
+    }
 }
