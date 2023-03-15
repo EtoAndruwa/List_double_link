@@ -2,8 +2,8 @@
 #define GRAPHVIZ_H
 
 #include <stdio.h>
-#include "../src/List_double_link.h"
-#include "./config/dot_config.h"
+#include "../../src/List_double_link.h"
+#include "../config/dot_config.h"
 
 enum error_codes_dot
 {

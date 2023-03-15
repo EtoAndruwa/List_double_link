@@ -8,30 +8,21 @@ CFLAGS = -g -c -Winit-self -Wredundant-decls -Wcast-align -Wundef -Wfloat-equal 
 EXE_FLAG = valgrind -s --leak-check=yes --show-leak-kinds=all --log-file="./logs/valgrind_log.txt"
 
 CC = g++
-TARGET = List_double_link
+TARGET = List
 
-PREF_OBJ = ./obj/
-PREF_SRC = ./src/
 DIR_GRAPHVIZ = ./graphviz
+DIR_LIST     = ./List
 
-SRC = $(wildcard $(PREF_SRC)*.cpp)
-OBJ = $(patsubst $(PREF_SRC)%.cpp, $(PREF_OBJ)%.o, $(SRC))
 
-all : $(TARGET) run
-
-$(TARGET) : $(OBJ) 
-	$(CC) $(OBJ) -o $(TARGET).exe
-
-$(PREF_OBJ)%.o : $(PREF_SRC)%.cpp
-	$(CC) $(CFLAGS) -c $< -o $@
+all : Make_graphviz Make_list
 
 clean: 
-	rm $(TARGET).exe $(PREF_OBJ)*.o
-
-run:
-	$(EXE_FLAG) ./List_double_link.exe
+	cd $(DIR_GRAPHVIZ) && make clean /
+	cd $(DIR_LIST) && make clean 
 
 Make_graphviz: 
 	cd $(DIR_GRAPHVIZ) && make
 
+Make_list:
+	cd $(DIR_LIST) && make
 

@@ -1,5 +1,5 @@
 obj/
 *.exe
-**/logs/
+logs/
 graph_dumps/
 graphviz/main.cpp
