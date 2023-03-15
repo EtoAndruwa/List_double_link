@@ -12,13 +12,17 @@ TARGET = List_double_link
 
 PREF_OBJ = ./obj/
 PREF_SRC = ./src/
-DIR_GRAPHVIZ = ./graphviz
-DIR_LIST     = .
+PREF_GRV= ../graphviz/src/
 
-SRC = $(wildcard $(PREF_SRC)*.cpp)
-OBJ = $(patsubst $(PREF_SRC)%.cpp, $(PREF_OBJ)%.o, $(SRC))
+LIST_SRC = $(wildcard $(PREF_SRC)*.cpp)
+LIST_OBJ = $(patsubst $(PREF_SRC)%.cpp, $(PREF_OBJ)%.o, $(LIST_SRC))
 
-all : $(TARGET) Make_graphviz run
+GRV_CPP = $(wildcard $(PREF_GRV)*.cpp)
+GRV_OBJ = $(patsubst $(PREF_GRV)%.cpp, $(PREF_OBJ)%.o, $(GRV_CPP))
+
+OBJ = $(GRV_OBJ) $(LIST_OBJ)
+
+all : $(TARGET) run
 
 $(TARGET) : $(OBJ) 
 	$(CC) $(OBJ) -o $(TARGET).exe
@@ -26,13 +30,13 @@ $(TARGET) : $(OBJ)
 $(PREF_OBJ)%.o : $(PREF_SRC)%.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
+$(PREF_OBJ)%.o : $(PREF_GRV)%.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
+
 clean: 
 	rm $(TARGET).exe $(PREF_OBJ)*.o
 
 run:
 	$(EXE_FLAG) ./List_double_link.exe
-
-Make_graphviz: 
-	cd $(DIR_GRAPHVIZ) && make
 
 

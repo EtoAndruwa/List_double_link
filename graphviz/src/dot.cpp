@@ -1,13 +1,13 @@
-#include "dot.h"
+#include "graphviz.h"
 
 size_t graph_start(char* file_name)
 {
     FILE* graph_txt = fopen(file_name, "a+");
     if(graph_txt == nullptr)
     {
+        printf("ERROR_TO_OPEN");
         return ERR_TO_OPEN_GRAPH_TXT;
     }
-    fprintf(graph_txt, "<!DOCTYPE HTML><pre>\n");
     fprintf(graph_txt, "\n");
     fprintf(graph_txt, "digraph\n");
     fprintf(graph_txt, "{\n");
@@ -28,11 +28,40 @@ size_t graph_end(char* file_name)
     }
 
     fprintf(graph_txt, "}\n");
-    fprintf(graph_txt, "</pre></html>\n");
 
     if(fclose(graph_txt) == EOF)
     {
         return ERR_TO_CLOSE_GRAPH_TXT;
+    }
+}
+
+size_t html_end(char* file_name)
+{
+    FILE* graph_txt = fopen(file_name, "a+");
+    if(graph_txt != nullptr)
+    {   
+        ERROR_MESSAGE(stderr, 1)
+    }
+    fprintf(graph_txt, "</pre></html>\n");
+
+    if(fclose(graph_txt) == EOF)
+    {
+        
+    }
+}
+
+size_t hmtl_start(char* file_name)
+{
+    FILE* graph_txt = fopen(file_name, "a+");
+    if(graph_txt == nullptr)
+    {
+        
+    }
+    fprintf(graph_txt, "<!DOCTYPE HTML><pre>\n");
+
+    if(fclose(graph_txt) == EOF)
+    {
+        
     }
 }
 
@@ -101,12 +130,55 @@ size_t graph_end(char* file_name)
 
 size_t create_graph_jpg(char* file_name)
 {
-    graph_start(file_name);
-    graph_end(file_name);
+    char* dir_file_name = cat_file_directory(file_name, TXT_FOLDER, INPUT_FORMAT);
+
+    graph_start(dir_file_name);
+    graph_end(dir_file_name);
+
+    // system_dot(dir_file_name);
+
+    free(dir_file_name);
+    dir_file_name = nullptr;
+
+    return 0;
 }
 
-void cat_file_directory(char* file_name)
+char* cat_file_directory(char* file_name, char* dir, char* format)
 {
-    printf("sizeof_dir %d \n", strlen(DIR_TO_DUMPS));
+    size_t size_of_file_name = strlen(file_name) + 1;
+    size_t size_of_dir_name = strlen(dir) + 1;
+    size_t size_of_input_format = strlen(dir) + 1;
+
+    char* dir_file_name = (char*)calloc(size_of_dir_name + size_of_file_name + size_of_input_format, sizeof(char));
+
+    if(dir_file_name == nullptr)
+    {
+
+    }
+
+    strcpy(dir_file_name, dir);
+    strcat(dir_file_name, file_name);
+    strcat(dir_file_name, format);
+
+    printf("%s \n\n", dir_file_name);
+
+    return dir_file_name;
 }
+
+size_t create_hmtl(char* file_name)
+{
+    char* dir_file_name = cat_file_directory(file_name, DIR_TO_DUMPS, HTML);
+
+    hmtl_start(dir_file_name);
+    html_end(dir_file_name);
+
+    return 0;
+}
+
+// char* system_dot(char* dir_file_name)
+// {
+//     char dot[] = "dot ";
+
+//     system("dot ./graph.txt -Tjpg -o graph.jpg");
+// }
 

@@ -5,8 +5,9 @@ int main()
     list* list_str = nullptr;
 
     list_str = list_ctor();
-    cat_file_directory("first.html");
-    create_graph_jpg("first.html");
+    char* file_name = "first.html";
+    create_graph_jpg("first");
+    create_hmtl(file_name);
 
 
     return 0;

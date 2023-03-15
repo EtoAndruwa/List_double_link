@@ -14,15 +14,18 @@ DIR_GRAPHVIZ = ./graphviz
 DIR_LIST     = ./List
 
 
-all : Make_graphviz Make_list
+all : Make_list 
 
-clean: 
-	cd $(DIR_GRAPHVIZ) && make clean /
+clean_l: 
 	cd $(DIR_LIST) && make clean 
 
-Make_graphviz: 
+clean_g:
+	cd $(DIR_GRAPHVIZ) && make clean 
+
+Make_g: 
 	cd $(DIR_GRAPHVIZ) && make
 
-Make_list:
+Make_list: 
 	cd $(DIR_LIST) && make
+
 

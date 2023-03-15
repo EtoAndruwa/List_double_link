@@ -8,7 +8,7 @@ CFLAGS = -g -c -Winit-self -Wredundant-decls -Wcast-align -Wundef -Wfloat-equal 
 EXE_FLAG = valgrind -s --leak-check=yes --show-leak-kinds=all --log-file="./logs/valgrind_log.txt"
 
 CC = g++
-TARGET = List
+TARGET = Dot
 
 PREF_OBJ = ./obj/
 PREF_SRC = ./src/
@@ -28,5 +28,5 @@ clean:
 	rm $(TARGET).exe $(PREF_OBJ)*.o
 
 run:
-	$(EXE_FLAG) ./List.exe
+	$(EXE_FLAG) ./dot.exe
 
