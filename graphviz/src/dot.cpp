@@ -8,12 +8,11 @@ size_t graph_start(char* file_name)
         printf("ERROR_TO_OPEN");
         return ERR_TO_OPEN_GRAPH_TXT;
     }
+
     fprintf(graph_txt, "\n");
     fprintf(graph_txt, "digraph\n");
     fprintf(graph_txt, "{\n");
     fprintf(graph_txt, "\trankdir=%s;\n", RANKDIR_DOT);
-    fprintf(graph_txt, "\tnode_\n");
-
 
     if(fclose(graph_txt) == EOF)
     {
@@ -42,7 +41,7 @@ size_t html_end(char* file_name)
     FILE* graph_txt = fopen(file_name, "a+");
     if(graph_txt == nullptr)
     {   
-        // ERROR_MESSAGE(stderr, 1)
+        ERROR_MESSAGE(stderr, 1)
     }
     fprintf(graph_txt, "</pre></html>\n");
 
@@ -67,39 +66,26 @@ size_t hmtl_start(char* file_name)
     }
 }
 
-// size_t print_node_data(node* node_ptr, char* file_name)
-// {
-//     FILE* graph_txt = fopen(file_name, "a+");
-//     if(graph_txt == nullptr)
-//     {
-//         return ERR_TO_OPEN_GRAPH_TXT;
-//     }
+size_t print_node_data(list* list_ptr, char* file_name)
+{
+    FILE* graph_txt = fopen(file_name, "a+");
+    if(graph_txt == nullptr)
+    {
+        return ERR_TO_OPEN_GRAPH_TXT;
+    }
 
-//     if(node_ptr != nullptr)
-//     {
-//         if(node_ptr->parent_node == nullptr)
-//         {
-//             fprintf(graph_txt, "\tnode_%d[shape = record, label =\" { <f0> left_child = %p } | { <here> value = %d \\n | parent = %p } | { <f1> right_child = %p } \", style=\"filled\", fillcolor=\"lightgrey\"];\n", node_ptr->node_value, node_ptr->left_child, node_ptr->node_value, node_ptr->parent_node, node_ptr->right_child);
-//         }
-//         else
-//         {
-//             fprintf(graph_txt, "\tnode_%d[shape = record, label =\" { <f0> left_child = %p } | { <here> value = %d \\n | parent = %p } | { <f1> right_child = %p } \"];\n", node_ptr->node_value, node_ptr->left_child, node_ptr->node_value, node_ptr->parent_node, node_ptr->right_child);
-//         }
-//         if(node_ptr->left_child != nullptr)
-//         {
-//             print_node_data(tree_struct, node_ptr->left_child, file_name);
-//         }
-//         if(node_ptr->right_child != nullptr)
-//         {
-//             print_node_data(tree_struct, node_ptr->right_child, file_name);
-//         }
-//     }
+    for(size_t i = 0; i < list_ptr->max_num_of_nodes; i++)
+    {
+        fprintf(graph_txt, "\tnode_%d[shape = record, label =\" {node_%d} | { <f0> prev = %ld } |{<here> value = %d}| { <f1> next = %ld } \"];\n", i, i, list_ptr->nodes_arr[i].value, 
+            list_ptr->nodes_arr[i].prev, list_ptr->nodes_arr[i].next);
+    }
 
-//     if(fclose(graph_txt) == EOF)
-//     {
-//         return ERR_TO_CLOSE_GRAPH_TXT;
-//     }
-// }
+
+    if(fclose(graph_txt) == EOF)
+    {
+        return ERR_TO_CLOSE_GRAPH_TXT;
+    }
+}
 
 // size_t print_node_links(node* node_ptr, char* file_name)
 // {
@@ -130,11 +116,12 @@ size_t hmtl_start(char* file_name)
 //     }
 // }
 
-size_t create_graph_jpg(char* file_name)
+size_t create_graph_jpg(list* list_ptr, char* file_name)
 {
     char* dir_file_name = cat_file_directory(file_name, TXT_FOLDER, INPUT_FORMAT);
 
     graph_start(dir_file_name);
+    print_node_data(list_ptr, dir_file_name);
     graph_end(dir_file_name);
 
     system_dot(file_name);
@@ -161,8 +148,6 @@ char* cat_file_directory(char* file_name, char* dir, char* format)
     strcpy(dir_file_name, dir);
     strcat(dir_file_name, file_name);
     strcat(dir_file_name, format);
-
-    printf("%s \n\n", dir_file_name);
 
     return dir_file_name;
 }
@@ -235,6 +220,7 @@ size_t add_to_image_list(char* file_name)
     {
         ERROR_MESSAGE(stderr, 1);
     }
+    
     fprintf(graph_txt, "%s\n", path_to_write);
 
     if(fclose(graph_txt) == EOF)
