@@ -25,8 +25,8 @@ $(PREF_OBJ)%.o : $(PREF_SRC)%.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean: 
-	rm $(TARGET).exe $(PREF_OBJ)*.o
+	rm $(TARGET).exe $(PREF_OBJ)*.o ./graph_dumps/images/*.jpg ./graph_dumps/txt/*.txt ./graph_dumps/html_output.html
 
 run:
-	$(EXE_FLAG) ./dot.exe
+	$(EXE_FLAG) ./dot.exe 
 

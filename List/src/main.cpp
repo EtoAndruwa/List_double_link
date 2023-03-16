@@ -5,9 +5,10 @@ int main()
     list* list_str = nullptr;
 
     list_str = list_ctor();
-    char* file_name = "first.html";
     create_graph_jpg("first");
-    create_hmtl(file_name);
+    create_graph_jpg("second");
+    create_graph_jpg("third");
+    create_html("html_output");
 
 
     return 0;
