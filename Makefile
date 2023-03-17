@@ -19,8 +19,11 @@ all : Make_list
 clean_l: 
 	cd $(DIR_LIST) && make clean 
 
+clean_gf:
+	cd $(DIR_GRAPHVIZ) && make clean_files
+
 clean_g:
-	cd $(DIR_GRAPHVIZ) && make clean 
+	cd $(DIR_GRAPHVIZ) && make clean
 
 Make_g: 
 	cd $(DIR_GRAPHVIZ) && make

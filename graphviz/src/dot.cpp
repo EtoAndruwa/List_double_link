@@ -1,6 +1,8 @@
 #include "graphviz.h"
 
-size_t graph_start(char* file_name)
+static size_t nuber_of_images = 0; // global variable in order to count the number of jpg files
+
+size_t graph_start(char* file_name) // writes the start of the .txt file
 {
     FILE* graph_txt = fopen(file_name, "a+");
     if(graph_txt == nullptr)
@@ -20,7 +22,7 @@ size_t graph_start(char* file_name)
     }
 }
 
-size_t graph_end(char* file_name)
+size_t graph_end(char* file_name) // writes the end of the .txt file 
 {
     FILE* graph_txt = fopen(file_name, "a+");
     if(graph_txt == nullptr)
@@ -36,7 +38,7 @@ size_t graph_end(char* file_name)
     }
 }
 
-size_t html_end(char* file_name)
+size_t html_end(char* file_name) // writes the end of the html file
 {
     FILE* graph_txt = fopen(file_name, "a+");
     if(graph_txt == nullptr)
@@ -51,7 +53,7 @@ size_t html_end(char* file_name)
     }
 }
 
-size_t hmtl_start(char* file_name)
+size_t hmtl_start(char* file_name) // writes the start of the html file 
 {
     FILE* graph_txt = fopen(file_name, "a+");
     if(graph_txt == nullptr)
@@ -66,7 +68,7 @@ size_t hmtl_start(char* file_name)
     }
 }
 
-size_t print_node_data(list* list_ptr, char* file_name)
+size_t print_node_data(list* list_ptr, char* file_name) // prints all datta about the list 
 {
     FILE* graph_txt = fopen(file_name, "a+");
     if(graph_txt == nullptr)
@@ -76,7 +78,7 @@ size_t print_node_data(list* list_ptr, char* file_name)
 
     for(size_t i = 0; i < list_ptr->max_num_of_nodes; i++)
     {
-        fprintf(graph_txt, "\tnode_%d[shape = record, label =\" {node_%d} | { <f0> prev = %ld } |{<here> value = %d}| { <f1> next = %ld } \"];\n", i, i, list_ptr->nodes_arr[i].value, 
+        fprintf(graph_txt, "\tnode_%d[shape = record, label =\" {node_%d} | { <f0> prev = %d } |{<here> value = %d}| { <f1> next = %d } \"];\n", i, i, list_ptr->nodes_arr[i].value, 
             list_ptr->nodes_arr[i].prev, list_ptr->nodes_arr[i].next);
     }
 
@@ -87,41 +89,43 @@ size_t print_node_data(list* list_ptr, char* file_name)
     }
 }
 
-// size_t print_node_links(node* node_ptr, char* file_name)
-// {
-//     FILE* graph_txt = fopen(file_name, "a+");
-//     if(graph_txt == nullptr)
-//     {
-//         return ERR_TO_OPEN_GRAPH_TXT;
-//     }
+size_t print_node_links(list* list_ptr, char* file_name) // prints all the links of the list 
+{
+    FILE* graph_txt = fopen(file_name, "a+");
+    if(graph_txt == nullptr)
+    {
+        return ERR_TO_OPEN_GRAPH_TXT;
+    }
 
-//     if(node_ptr->left_child != nullptr)
-//     {
-//         fprintf(graph_txt, "\tnode_%d:f0 -> node_%d:here[color=\"blue\", label = \"left_child\"];\n", node_ptr->node_value, node_ptr->left_child->node_value);
-//         print_node_links(tree_struct, node_ptr->left_child, file_name);
-//     }
-//     if(node_ptr->right_child != nullptr)
-//     {
-//         fprintf(graph_txt, "\tnode_%d:f1 -> node_%d:here[color=\"red\", label = \"right_child\"];\n", node_ptr->node_value, node_ptr->right_child->node_value);
-//         print_node_links(tree_struct, node_ptr->right_child, file_name);
-//     }
-//     // if(node_ptr->parent_node != nullptr)
-//     // {
-//     //     fprintf(graph_txt, "\tnode_%d -> node_%d[color=\"green\", label = \"parent\"];\n", node_ptr->node_value, node_ptr->parent_node->node_value);
-//     // }
+    int next_node = list_ptr->head_node;
 
-//     if(fclose(graph_txt) == EOF)
-//     {
-//         return ERR_TO_CLOSE_GRAPH_TXT;
-//     }
-// }
+    while(next_node != -1)
+    {
+        if(list_ptr->nodes_arr[next_node].next != -1)
+        {
+            fprintf(graph_txt, "\tnode_%d:f1 -> node_%d:f1[color=\"red\", label = \"next node\"];\n", next_node, list_ptr->nodes_arr[next_node].next);
+        }
+        if(list_ptr->nodes_arr[next_node].prev != -1)
+        {
+            fprintf(graph_txt, "\tnode_%d:f0 -> node_%d:f0[color=\"blue\", label = \"previous node\"];\n", list_ptr->nodes_arr[next_node].prev, next_node);
+        }
 
-size_t create_graph_jpg(list* list_ptr, char* file_name)
+        next_node = list_ptr->nodes_arr[next_node].next;
+    }
+
+    if(fclose(graph_txt) == EOF)
+    {
+        return ERR_TO_CLOSE_GRAPH_TXT;
+    }
+}
+
+size_t create_graph_jpg(list* list_ptr, char* file_name) // prints all data about the list into the .txt file
 {
     char* dir_file_name = cat_file_directory(file_name, TXT_FOLDER, INPUT_FORMAT);
 
     graph_start(dir_file_name);
     print_node_data(list_ptr, dir_file_name);
+    print_node_links(list_ptr, dir_file_name);
     graph_end(dir_file_name);
 
     system_dot(file_name);
@@ -132,7 +136,7 @@ size_t create_graph_jpg(list* list_ptr, char* file_name)
     return 0;
 }
 
-char* cat_file_directory(char* file_name, char* dir, char* format)
+char* cat_file_directory(char* file_name, char* dir, char* format) // cats the file name, dir path and extension into the one string
 {
     size_t size_of_file_name = strlen(file_name) + 1;
     size_t size_of_dir_name = strlen(dir) + 1;
@@ -152,7 +156,7 @@ char* cat_file_directory(char* file_name, char* dir, char* format)
     return dir_file_name;
 }
 
-size_t create_html(char* file_name)
+size_t create_html(char* file_name) // creates the whole html file at once
 {
     char* dir_file_name = cat_file_directory(file_name, DIR_TO_DUMPS, HTML);
 
@@ -160,15 +164,13 @@ size_t create_html(char* file_name)
     add_image_to_html(dir_file_name);
     html_end(dir_file_name);
 
-    // open_in_chrome(dir_file_name);
-
     free(dir_file_name);
     dir_file_name = nullptr;    
 
     return 0;
 }
 
-char* system_dot(char* file_name)
+char* system_dot(char* file_name) // creates a dot function in order to call it automatically
 {
     char* dot  = " dot ";
     char* flag = " -o ";
@@ -210,7 +212,7 @@ char* system_dot(char* file_name)
     system_cmd = nullptr;
 }
 
-size_t add_to_image_list(char* file_name)
+size_t add_to_image_list(char* file_name) // adds the path to the image into the image_list.file
 {
     char* dir_file_name = cat_file_directory("image_list.txt", DIR_TO_DUMPS, "");
     char* path_to_write = cat_file_directory(file_name, "../graph_dumps/images/", "");
@@ -230,16 +232,17 @@ size_t add_to_image_list(char* file_name)
 
     free(dir_file_name);
     dir_file_name = nullptr;
-free(path_to_write);
+    free(path_to_write);
     path_to_write = nullptr;
 }
 
-size_t add_image_to_html(char* dir_file_name)
+size_t add_image_to_html(char* dir_file_name) // adds all images to the html at once
 {
     FILE* graph_txt = fopen(dir_file_name, "a+");
     if(graph_txt == nullptr)
     {
         ERROR_MESSAGE(stderr, 1);
+        return 1; 
     }
     
     get_size_file();
@@ -250,30 +253,11 @@ size_t add_image_to_html(char* dir_file_name)
     if(fclose(graph_txt) == EOF)
     {
         ERROR_MESSAGE(stderr, 1);
+        return 1; 
     }
 }
 
-// void open_in_chrome(char* file_name)
-// {
-//     char* chrome = "explorer.exe ";
-
-//     size_t size_of_chrome = strlen(chrome) + 1;
-//     size_t size_of_file   = strlen(file_name) + 1;
-
-//     char* cmd = (char*)calloc(size_of_chrome + size_of_file, sizeof(char));
-
-//     strcpy(cmd, chrome);
-//     strcat(cmd, file_name);
-
-//     printf("\n\n%s\n\n", cmd);
-
-//     system(cmd);
-
-//     free(cmd);
-//     cmd = nullptr;
-// }
-
-char* get_tokens_into_buf() 
+char* get_tokens_into_buf() // reads all tokens into the buffer
 {
     char* dir_file_name = cat_file_directory("image_list.txt", DIR_TO_DUMPS, "");
     FILE* image_list = fopen(dir_file_name, "r");
@@ -297,7 +281,7 @@ char* get_tokens_into_buf()
     return buffer_ptr;
 }
 
-size_t get_size_file() 
+size_t get_size_file() // gets the size of the file
 {
     char* dir_file_name = cat_file_directory("image_list.txt", DIR_TO_DUMPS, "");
     FILE* image_list = fopen(dir_file_name, "r");
@@ -317,7 +301,7 @@ size_t get_size_file()
     return size;
 }
 
-size_t get_tokens(char* buffer, FILE* file_tpr) 
+size_t get_tokens(char* buffer, FILE* file_tpr) // prints all the tokens into the file (the path to the image)
 {
     char* token = strtok(buffer," \n\r");
 
@@ -327,3 +311,13 @@ size_t get_tokens(char* buffer, FILE* file_tpr)
         token = strtok(NULL, " \n\r");
     }
 }
+
+size_t print_legend()
+{
+
+
+
+
+
+}
+

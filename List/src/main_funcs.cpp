@@ -94,31 +94,6 @@ void push_after(list* list_str, size_t node_index, node_val_type value)
 //     }
 // }
 
-// void print_node(list* list_str, size_t node_index)
-// {
-//     if(list_str->nodes_arr[node_index].next != -1 && node_index > 0 && node_index < list_str->max_num_of_nodes)
-//     {
-//         printf("\n==========NEXT_NODE==========\n");
-//         printf("Value: %d\n", list_str->nodes_arr[list_str->nodes_arr[node_index].next].value);
-//         printf("==========NEXT_NODE==========\n");
-
-//         printf("\n==========THIS_NODE==========\n");
-//         printf("Next node index: %ld\n", list_str->nodes_arr[node_index].next);
-//         printf("Value: %d\n", list_str->nodes_arr[node_index].value);
-//         printf("Previous node index: %ld\n", list_str->nodes_arr[node_index].prev);
-//         printf("==========THIS_NODE==========\n");
-
-//         printf("\n==========PREV_NODE==========\n");
-//         printf("Value: %d\n", list_str->nodes_arr[list_str->nodes_arr[node_index].prev].value);
-//         printf("==========PREV_NODE==========\n");
-//     }
-//     else
-//     {
-//         printf("Node with index = %ld doesn't exist. Please, try again\n", node_index);
-//     }
-// }
-
-
 list* list_ctor()
 {
     list* list_ptr = (list*)calloc(1, sizeof(list));
@@ -129,7 +104,7 @@ list* list_ctor()
     }
 
     list_ptr->cur_num_of_nodes = 0;
-    list_ptr->max_num_of_nodes = 5;
+    list_ptr->max_num_of_nodes = 25;
     list_ptr->nodes_arr = (node*)calloc(list_ptr->max_num_of_nodes, sizeof(node));
 
     if(list_ptr->nodes_arr == nullptr)
@@ -139,16 +114,19 @@ list* list_ctor()
 
     for(size_t i = 0; i < list_ptr->max_num_of_nodes; i++)
     {
-        if(i == list_ptr->max_num_of_nodes - 1)
+        if(i == (list_ptr->max_num_of_nodes - 1))
         {
+            
             list_ptr->nodes_arr[i].next  = -1;
             list_ptr->nodes_arr[i].prev  = -1;
             list_ptr->nodes_arr[i].value = POISON;
-            break;
         }
-        list_ptr->nodes_arr[i].next  = i+1;
-        list_ptr->nodes_arr[i].prev  = -1;
-        list_ptr->nodes_arr[i].value = POISON;
+        else
+        {
+            list_ptr->nodes_arr[i].next  = i + 1;
+            list_ptr->nodes_arr[i].prev  = -1;
+            list_ptr->nodes_arr[i].value = POISON;
+        }
     }
 
     list_ptr->head_node = 0;

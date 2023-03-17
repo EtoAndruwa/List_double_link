@@ -28,5 +28,6 @@ size_t get_size_file();
 char* get_tokens_into_buf();
 size_t get_tokens(char* buffer, FILE* file_tpr);
 size_t add_image_to_html(char* dir_file_name);
+size_t print_node_links(list* list_ptr, char* file_name);
 
 #endif
