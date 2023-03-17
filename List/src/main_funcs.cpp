@@ -94,7 +94,7 @@ void push_after(list* list_str, size_t node_index, node_val_type value)
 //     }
 // }
 
-list* list_ctor()
+list* list_ctor(size_t number_of_nodes)
 {
     list* list_ptr = (list*)calloc(1, sizeof(list));
 
@@ -104,7 +104,7 @@ list* list_ctor()
     }
 
     list_ptr->cur_num_of_nodes = 0;
-    list_ptr->max_num_of_nodes = 25;
+    list_ptr->max_num_of_nodes = number_of_nodes;
     list_ptr->nodes_arr = (node*)calloc(list_ptr->max_num_of_nodes, sizeof(node));
 
     if(list_ptr->nodes_arr == nullptr)
@@ -116,7 +116,7 @@ list* list_ctor()
     {
         if(i == (list_ptr->max_num_of_nodes - 1))
         {
-            
+
             list_ptr->nodes_arr[i].next  = -1;
             list_ptr->nodes_arr[i].prev  = -1;
             list_ptr->nodes_arr[i].value = POISON;
@@ -129,9 +129,9 @@ list* list_ctor()
         }
     }
 
-    list_ptr->head_node = 0;
+    list_ptr->head_node = 1;
     list_ptr->free_node = 0;
-    list_ptr->tail_node = 0;
+    list_ptr->tail_node = 2;
 
     list_ptr->error_code = LIST_OK;
 }

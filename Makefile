@@ -14,7 +14,7 @@ DIR_GRAPHVIZ = ./graphviz
 DIR_LIST     = ./List
 
 
-all : Make_list 
+all : Make_list
 
 clean_l: 
 	cd $(DIR_LIST) && make clean 

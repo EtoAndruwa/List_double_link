@@ -13,5 +13,8 @@
 #define OUTPUT_FORMAT        ".jpg"
 #define INPUT_FORMAT         ".txt"
 #define HTML                 ".html"
+#define OUTPUT_NAME          "list"
+#define DEFAULT_LEGEND_TEXT  "Empty legend"
+
 
 #endif

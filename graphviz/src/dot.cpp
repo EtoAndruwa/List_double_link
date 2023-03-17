@@ -1,6 +1,6 @@
 #include "graphviz.h"
 
-static size_t nuber_of_images = 0; // global variable in order to count the number of jpg files
+static size_t number_of_images = 0; // global variable in order to count the number of jpg files
 
 size_t graph_start(char* file_name) // writes the start of the .txt file
 {
@@ -60,7 +60,7 @@ size_t hmtl_start(char* file_name) // writes the start of the html file
     {
         
     }
-    fprintf(graph_txt, "<!DOCTYPE HTML><pre> asdasdasdad\n");
+    fprintf(graph_txt, "<!DOCTYPE HTML><pre>\n");
 
     if(fclose(graph_txt) == EOF)
     {
@@ -70,7 +70,7 @@ size_t hmtl_start(char* file_name) // writes the start of the html file
 
 size_t print_node_data(list* list_ptr, char* file_name) // prints all datta about the list 
 {
-    FILE* graph_txt = fopen(file_name, "a+");
+    FILE* graph_txt = fopen(file_name, "a+");   
     if(graph_txt == nullptr)
     {
         return ERR_TO_OPEN_GRAPH_TXT;
@@ -78,8 +78,8 @@ size_t print_node_data(list* list_ptr, char* file_name) // prints all datta abou
 
     for(size_t i = 0; i < list_ptr->max_num_of_nodes; i++)
     {
-        fprintf(graph_txt, "\tnode_%d[shape = record, label =\" {node_%d} | { <f0> prev = %d } |{<here> value = %d}| { <f1> next = %d } \"];\n", i, i, list_ptr->nodes_arr[i].value, 
-            list_ptr->nodes_arr[i].prev, list_ptr->nodes_arr[i].next);
+        fprintf(graph_txt, "\tnode_%d[shape = record, style=\"filled\" fillcolor=\"%s\", label =\" {node_%d} | { <f0> prev = %d } |{<here> value = %d}| { <f1> next = %d } \"];\n", i, BLUE_BG_COLOR_DOT, i, list_ptr->nodes_arr[i].value, 
+        list_ptr->nodes_arr[i].prev, list_ptr->nodes_arr[i].next);
     }
 
 
@@ -103,11 +103,11 @@ size_t print_node_links(list* list_ptr, char* file_name) // prints all the links
     {
         if(list_ptr->nodes_arr[next_node].next != -1)
         {
-            fprintf(graph_txt, "\tnode_%d:f1 -> node_%d:f1[color=\"red\", label = \"next node\"];\n", next_node, list_ptr->nodes_arr[next_node].next);
+            fprintf(graph_txt, "\tnode_%d:f1 -> node_%d:f1[color=\"%s\", label = \"next node\"];\n", next_node, list_ptr->nodes_arr[next_node].next, RED_COLOR_DOT);
         }
         if(list_ptr->nodes_arr[next_node].prev != -1)
         {
-            fprintf(graph_txt, "\tnode_%d:f0 -> node_%d:f0[color=\"blue\", label = \"previous node\"];\n", list_ptr->nodes_arr[next_node].prev, next_node);
+            fprintf(graph_txt, "\tnode_%d:f0 -> node_%d:f0[color=\"%s\", label = \"previous node\"];\n", list_ptr->nodes_arr[next_node].prev, next_node, BLUE_COLOR_DOT);
         }
 
         next_node = list_ptr->nodes_arr[next_node].next;
@@ -119,19 +119,30 @@ size_t print_node_links(list* list_ptr, char* file_name) // prints all the links
     }
 }
 
-size_t create_graph_jpg(list* list_ptr, char* file_name) // prints all data about the list into the .txt file
+size_t create_graph_jpg(list* list_ptr) // prints all data about the list into the .txt file
 {
+    char int_str_equivalent[11] = {};
+    sprintf(int_str_equivalent, "%d", number_of_images);
+    char* file_name = cat_file_directory(OUTPUT_NAME, "", int_str_equivalent);
+
     char* dir_file_name = cat_file_directory(file_name, TXT_FOLDER, INPUT_FORMAT);
 
     graph_start(dir_file_name);
+    print_legend("", dir_file_name);
     print_node_data(list_ptr, dir_file_name);
     print_node_links(list_ptr, dir_file_name);
+    print_h_t_f_data(list_ptr, dir_file_name);
     graph_end(dir_file_name);
 
     system_dot(file_name);
 
     free(dir_file_name);
     dir_file_name = nullptr;
+
+    free(file_name);
+    file_name = nullptr;
+
+    number_of_images++;
 
     return 0;
 }
@@ -307,17 +318,60 @@ size_t get_tokens(char* buffer, FILE* file_tpr) // prints all the tokens into th
 
     while (token != NULL)                        
     {   
+        fprintf(file_tpr, "<h2>The image below%s</h2>\n", token);
         fprintf(file_tpr, "<img src=\"%s\" alt=\"%s \">\n", token, token);
         token = strtok(NULL, " \n\r");
     }
 }
 
-size_t print_legend()
+size_t print_legend(char* legen_text, char* dir_file_name)
 {
+    FILE* graph_txt = fopen(dir_file_name, "a+");
+    if(graph_txt == nullptr)
+    {
+        return ERR_TO_OPEN_GRAPH_TXT;
+    }
 
+    if(strlen(legen_text) == 0)
+    {   
+        fprintf(graph_txt, "\tnode_legend[shape = record, label = \"%s\"];\n", DEFAULT_LEGEND_TEXT);
+    }
+    else    
+    {
+        fprintf(graph_txt, "\tnode_legend[shape=record , label = \"%s\"];\n", legen_text);
+    }
+    
+       
+    if(fclose(graph_txt) == EOF)
+    {
+        return ERR_TO_CLOSE_GRAPH_TXT;
+    }
+}
 
+size_t print_h_t_f_data(list* list_ptr, char* file_name)
+{
+    FILE* graph_txt = fopen(file_name, "a+");
+    if(graph_txt == nullptr)
+    {
+        return ERR_TO_OPEN_GRAPH_TXT;
+    }
 
+    if(list_ptr->free_node != -1)
+    {
+        fprintf(graph_txt, "\tfree_node -> node_%d:f1[color=\"%s\", label = \"Free node\"];\n", list_ptr->free_node, GREEN_COLOR_DOT);
+    }
+    if(list_ptr->head_node != -1)
+    {
+        fprintf(graph_txt, "\thead_node -> node_%d:f1[color=\"%s\", label = \"Head node\"];\n", list_ptr->head_node, GREEN_COLOR_DOT);
+    }
+    if(list_ptr->tail_node != -1)
+    {
+        fprintf(graph_txt, "\ttail_node -> node_%d:f1[color=\"%s\", label = \"Tail node\"];\n", list_ptr->tail_node, GREEN_COLOR_DOT);
+    }
 
-
+    if(fclose(graph_txt) == EOF)
+    {
+        return ERR_TO_CLOSE_GRAPH_TXT;
+    }
 }
 
