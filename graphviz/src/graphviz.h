@@ -15,7 +15,7 @@ enum error_codes_dot
 };
 
 size_t add_to_image_list(char* file_name);
-size_t create_graph_jpg(list* list_ptr); // prints all data about the list into the .txt file
+size_t create_graph_jpg(list* list_ptr, char* legend); // prints all data about the list into the .txt file
 size_t graph_start(char* file_name);
 size_t graph_end(char* file_name);
 char* cat_file_directory(char* file_name, char* dir, char* format);
@@ -29,7 +29,8 @@ char* get_tokens_into_buf();
 size_t get_tokens(char* buffer, FILE* file_tpr);
 size_t add_image_to_html(char* dir_file_name);
 size_t print_node_links(list* list_ptr, char* file_name);
-size_t print_legend(char* legen_text, char* dir_file_name);
+size_t print_legend(char* legend_text, char* dir_file_name);
 size_t print_h_t_f_data(list* list_ptr, char* file_name);
+char* create_legend(const char* func_name, int new_node_index, int node_index, int value, int node_index_value);
 
 #endif

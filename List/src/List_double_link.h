@@ -39,5 +39,6 @@ enum error_codes
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 list* list_ctor(size_t number_of_nodes);
+void push_after(list* list_str, size_t node_index, node_val_type value);
 
 #endif

@@ -4,11 +4,10 @@ int main()
 {
     list* list_str = nullptr;
 
-    list_str = list_ctor(5);
-    // for(size_t i = 0; i < 4; i++)
-        create_graph_jpg(list_str);
-
-
+    list_str = list_ctor(20);
+    push_after(list_str, 0, 100);
+    push_after(list_str, 0, 20);
+push_after(list_str, 1, 40);
 
     create_html("html_output");
 

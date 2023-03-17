@@ -11,6 +11,7 @@
 
 void push_after(list* list_str, size_t node_index, node_val_type value)
 {   
+    int new_node_index = list_str->free_node;
     if(node_index > list_str->max_num_of_nodes - 1)
     {
         printf("Index is out of array, try again\n");
@@ -18,22 +19,47 @@ void push_after(list* list_str, size_t node_index, node_val_type value)
     }
     else
     {
-        if(list_str->cur_num_of_nodes != 0)
+        if(list_str->head_node == -1)
         {
-
-
-        }
-        else                
-        {
-            printf("Node was made as head with index %ld\n", node_index);
+            //printf("Node was made as head with index %ld\n", node_index);
             list_str->head_node = list_str->free_node;
+            // printf("Head node %d\n", list_str->head_node);
+            list_str->free_node = list_str->nodes_arr[list_str->free_node].next;
+            // printf("New free node %d\n", list_str->free_node);
             list_str->nodes_arr[list_str->head_node].value = value;
             list_str->nodes_arr[list_str->head_node].next = -1;
             list_str->nodes_arr[list_str->head_node].prev = -1;
-            list_str->free_node++;
             list_str->cur_num_of_nodes++;
         }
+        else                
+        {
+            if(list_str->nodes_arr[node_index].prev == -1 && list_str->head_node != node_index)
+            {   
+                printf("Node does not exisr");
+            }
+            else
+            {
+                // printf("new_node_index: %d\n" ,new_node_index);
+                list_str->nodes_arr[new_node_index].value = value;
+                list_str->free_node = list_str->nodes_arr[list_str->free_node].next;
+                // printf("list_str->free_node: %d\n" ,list_str->free_node);
+                list_str->nodes_arr[new_node_index].next = list_str->nodes_arr[node_index].next;    
+                // printf("list_str->nodes_arr[new_node_index].next %d\n" ,list_str->nodes_arr[new_node_index].next);
+                list_str->nodes_arr[new_node_index].prev = node_index;
+                // printf("list_str->nodes_arr[new_node_index].prev %d\n" ,list_str->nodes_arr[new_node_index].prev);
+                if(list_str->nodes_arr[new_node_index].next != -1)
+                {
+                    list_str->nodes_arr[list_str->nodes_arr[new_node_index].next].prev = new_node_index;
+                    // printf("list_str->nodes_arr[list_str->nodes_arr[new_node_index].next].prev: %d\n" ,list_str->nodes_arr[list_str->nodes_arr[new_node_index].next].prev);
+                }
+                list_str->nodes_arr[node_index].next = new_node_index;
+            }
+        }
     }
+
+    char* legend = create_legend(__func__ , new_node_index, node_index, value, list_str->nodes_arr[node_index].value);
+
+    create_graph_jpg(list_str, legend);
 }
 
 // void push_before(list* list_str, size_t node_index, node_val_type value)
@@ -129,9 +155,9 @@ list* list_ctor(size_t number_of_nodes)
         }
     }
 
-    list_ptr->head_node = 1;
+    list_ptr->head_node = -1;
     list_ptr->free_node = 0;
-    list_ptr->tail_node = 2;
+    list_ptr->tail_node = -1;
 
     list_ptr->error_code = LIST_OK;
 }
