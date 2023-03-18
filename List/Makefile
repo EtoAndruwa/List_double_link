@@ -38,5 +38,3 @@ clean:
 
 run:
 	$(EXE_FLAG) ./List_double_link.exe
-
-

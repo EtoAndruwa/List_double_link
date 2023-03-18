@@ -15,6 +15,7 @@ size_t graph_start(char* file_name) // writes the start of the .txt file
     fprintf(graph_txt, "digraph\n");
     fprintf(graph_txt, "{\n");
     fprintf(graph_txt, "\trankdir=%s;\n", RANKDIR_DOT);
+    fprintf(graph_txt, "\tsplines=%s;\n", SPLINES_DOT);
 
     if(fclose(graph_txt) == EOF)
     {
@@ -82,7 +83,7 @@ size_t print_node_data(list* list_ptr, char* file_name) // prints all datta abou
 
         while(next_node_head != -1)
         {
-            fprintf(graph_txt, "\tnode_%d[shape = record, style=\"filled\" fillcolor=\"%s\", label =\" {node_%d} | { <f0> prev = %d } |{<here> value = %d}| { <f1> next = %d } \"];\n", next_node_head, BLUE_BG_COLOR_DOT, next_node_head, list_ptr->nodes_arr[next_node_head].prev,
+            fprintf(graph_txt, "\tnode_%d[shape = record, style=\"filled\" fillcolor=\"%s\", label =\" {<name> node_%d} | { <f0> prev = %d } |{<here> value = %d}| { <f1> next = %d } \"];\n", next_node_head, BLUE_BG_COLOR_DOT, next_node_head, list_ptr->nodes_arr[next_node_head].prev,
             list_ptr->nodes_arr[next_node_head].value, list_ptr->nodes_arr[next_node_head].next);
 
             next_node_head = list_ptr->nodes_arr[next_node_head].next;
@@ -95,7 +96,7 @@ size_t print_node_data(list* list_ptr, char* file_name) // prints all datta abou
 
         while(next_node_free != -1)
         {
-            fprintf(graph_txt, "\tnode_free_%d[shape = record, style=\"filled\" fillcolor=\"%s\", label =\" {node_%d} | { <f0> prev = %d } |{<here> value = %d}| { <f1> next = %d } \"];\n", next_node_free, RED_BG_COLOR_DOT, next_node_free, list_ptr->nodes_arr[next_node_free].prev,
+            fprintf(graph_txt, "\tnode_free_%d[shape = record, style=\"filled\" fillcolor=\"%s\", label =\" {<name> node_%d} | { <f0> prev = %d } |{<here> value = %d}| { <f1> next = %d } \"];\n", next_node_free, RED_BG_COLOR_DOT, next_node_free, list_ptr->nodes_arr[next_node_free].prev,
             list_ptr->nodes_arr[next_node_free].value, list_ptr->nodes_arr[next_node_free].next);
 
             next_node_free = list_ptr->nodes_arr[next_node_free].next;
@@ -150,6 +151,21 @@ size_t print_node_links(list* list_ptr, char* file_name) // prints all the links
         }
     }
 
+    if(list_ptr->free_node != -1)
+    {
+        fprintf(graph_txt, "\tfree_node[shape = record, style=\"filled\" fillcolor=\"%s\", label = \"Free node\"];\n", FREE_NODE_COLOR);
+        fprintf(graph_txt, "\tfree_node -> node_free_%d:<name>[color=\"%s\", label = \"Free node\"];\n\n", list_ptr->free_node, FREE_NODE_COLOR);
+    }
+    if(list_ptr->head_node != -1)
+    {
+        fprintf(graph_txt, "\thead_node[shape = record, style=\"filled\" fillcolor=\"%s\", label = \"Head node\"];\n", HEAD_NODE_COLOR);
+        fprintf(graph_txt, "\thead_node -> node_%d:<name>[color=\"%s\", label = \"Head node\"];\n\n", list_ptr->head_node, HEAD_NODE_COLOR);
+    }
+    if(list_ptr->tail_node != -1)
+    {
+        fprintf(graph_txt, "\ttail_node[shape = record, style=\"filled\" fillcolor=\"%s\", label = \"Tail node\"];\n", TAIL_NODE_COLOR);
+        fprintf(graph_txt, "\ttail_node -> node_%d:<name>[color=\"%s\", label = \"Tail node\"];\n\n", list_ptr->tail_node, TAIL_NODE_COLOR);
+    }
 
     if(fclose(graph_txt) == EOF)
     {
@@ -160,26 +176,41 @@ size_t print_node_links(list* list_ptr, char* file_name) // prints all the links
 size_t create_graph_jpg(list* list_ptr, char* legend) // prints all data about the list into the .txt file
 {
     char int_str_equivalent[11] = {};
-    sprintf(int_str_equivalent, "%d", number_of_images);
+    sprintf(int_str_equivalent, "%d_%s", number_of_images, "logical");
     char* file_name = cat_file_directory(OUTPUT_NAME, "", int_str_equivalent);
-
     char* dir_file_name = cat_file_directory(file_name, TXT_FOLDER, INPUT_FORMAT);
 
     graph_start(dir_file_name);
     print_legend(legend, dir_file_name);
     print_node_data(list_ptr, dir_file_name);
     print_node_links(list_ptr, dir_file_name);
-    print_h_t_f_data(list_ptr, dir_file_name);
     graph_end(dir_file_name);
 
     system_dot(file_name);
-
     free(dir_file_name);
     dir_file_name = nullptr;
-
     free(file_name);
     file_name = nullptr;
+    free(legend);
+    legend = nullptr;
 
+
+    memset(int_str_equivalent, 0, 11);
+    sprintf(int_str_equivalent, "%d_%s", number_of_images, "physical");
+    file_name = cat_file_directory(OUTPUT_NAME, "", int_str_equivalent);
+    dir_file_name = cat_file_directory(file_name, TXT_FOLDER, INPUT_FORMAT);
+
+    graph_start(dir_file_name);
+    // print_legend(legend, dir_file_name);
+    print_node_data_phys(list_ptr, dir_file_name);
+    print_node_links_phys(list_ptr, dir_file_name);
+    graph_end(dir_file_name);
+
+    system_dot(file_name);
+    free(dir_file_name);
+    dir_file_name = nullptr;
+    free(file_name);
+    file_name = nullptr;
     free(legend);
     legend = nullptr;
 
@@ -365,8 +396,8 @@ size_t get_tokens(char* buffer, FILE* file_tpr) // prints all the tokens into th
 
     while (token != NULL)                        
     {   
-        fprintf(file_tpr, "<h2>The image below%s</h2>\n", token);
-        fprintf(file_tpr, "<img src=\"%s\" alt=\"%s \">\n", token, token);
+        fprintf(file_tpr, "<div style =\"text-align: center;\"><h1>The image below %s</h1>\n", strstr(token, OUTPUT_NAME));
+        fprintf(file_tpr, "<img src=\"%s\" alt=\"%s \"></div>\n", token, token);
         token = strtok(NULL, " \n\r");
     }
 
@@ -398,29 +429,64 @@ size_t print_legend(char* legend_text, char* dir_file_name)
     }
 }
 
-size_t print_h_t_f_data(list* list_ptr, char* file_name)
+char* create_legend(const char* func_name, int new_node_index, int node_index, int value, int node_index_value)
 {
-    FILE* graph_txt = fopen(file_name, "a+");
+    char* legend = (char*)calloc(100, sizeof(char));;  
+
+    if(strcmp(func_name, "push_after") == 0)
+    {
+        sprintf(legend, "Node_%d with value = %d was pushed after the Node_%d with value %d", new_node_index, value, node_index, node_index_value);
+    }
+    else if(strcmp(func_name, "delete_node") == 0)
+    {
+        sprintf(legend, "Node_%d with value = %d was deleted from the list" ,node_index, node_index_value);
+    }
+    else
+    {
+        sprintf(legend, "NEW COMMAND WAS PERFORMED");
+    }
+
+    return legend;
+}
+
+size_t print_node_data_phys(list* list_ptr, char* dir_file_name)
+{
+    FILE* graph_txt = fopen(dir_file_name, "a+");
     if(graph_txt == nullptr)
     {
+        printf("ERROR TO OPEN ");
         return ERR_TO_OPEN_GRAPH_TXT;
     }
 
-    if(list_ptr->free_node != -1)
+    char* node_bg_color = nullptr;
+    for(size_t node_index = 0; node_index < list_ptr->max_num_of_nodes - 1; node_index++)
     {
-        fprintf(graph_txt, "\tfree_node[shape = record, style=\"filled\" fillcolor=\"%s\", label = \"Free node\"];\n", FREE_NODE_COLOR);
-        fprintf(graph_txt, "\tfree_node -> node_free_%d:f1[color=\"%s\", label = \"Free node\"];\n\n", list_ptr->free_node, FREE_NODE_COLOR);
+        if(node_index == list_ptr->tail_node || node_index == list_ptr->head_node || (list_ptr->nodes_arr[node_index].prev != -1 && list_ptr->nodes_arr[node_index].next != -1))
+        {
+            node_bg_color = BLUE_BG_COLOR_DOT;
+        }
+        else
+        {
+            node_bg_color = RED_BG_COLOR_DOT;
+        }
+        
+        fprintf(graph_txt, "\tnode_%d[shape = record, style=\"filled\" fillcolor=\"%s\", label =\" {<name> node_%d} | { <f0> prev = %d } |{<here> value = %d}| { <f1> next = %d } \"];\n", 
+            node_index, node_bg_color, node_index, list_ptr->nodes_arr[node_index].prev, list_ptr->nodes_arr[node_index].value, list_ptr->nodes_arr[node_index].next);
+        fprintf(graph_txt, "\tnode_%d -> node_%d [style=invis]\n", node_index, node_index + 1);
     }
-    if(list_ptr->head_node != -1)
+
+    int last_node_indes = list_ptr->max_num_of_nodes - 1;
+    if(last_node_indes == list_ptr->tail_node || last_node_indes == list_ptr->head_node || (list_ptr->nodes_arr[last_node_indes].prev != -1 && 
+        list_ptr->nodes_arr[last_node_indes].next != -1))
     {
-        fprintf(graph_txt, "\thead_node[shape = record, style=\"filled\" fillcolor=\"%s\", label = \"Head node\"];\n", HEAD_NODE_COLOR);
-        fprintf(graph_txt, "\thead_node -> node_%d:f1[color=\"%s\", label = \"Head node\"];\n\n", list_ptr->head_node, HEAD_NODE_COLOR);
+        node_bg_color = BLUE_BG_COLOR_DOT;
     }
-    if(list_ptr->tail_node != -1)
+    else
     {
-        fprintf(graph_txt, "\ttail_node[shape = record, style=\"filled\" fillcolor=\"%s\", label = \"Tail node\"];\n", TAIL_NODE_COLOR);
-        fprintf(graph_txt, "\ttail_node -> node_%d:f1[color=\"%s\", label = \"Tail node\"];\n\n", list_ptr->tail_node, TAIL_NODE_COLOR);
+        node_bg_color = RED_BG_COLOR_DOT;
     }
+    fprintf(graph_txt, "\tnode_%d[shape = record, style=\"filled\" fillcolor=\"%s\", label =\" {<name> node_%d} | { <f0> prev = %d } |{<here> value = %d}| { <f1> next = %d } \"];\n", 
+        last_node_indes, node_bg_color, last_node_indes, list_ptr->nodes_arr[last_node_indes].prev, list_ptr->nodes_arr[last_node_indes].value, list_ptr->nodes_arr[last_node_indes].next);
 
     if(fclose(graph_txt) == EOF)
     {
@@ -428,23 +494,46 @@ size_t print_h_t_f_data(list* list_ptr, char* file_name)
     }
 }
 
-char* create_legend(const char* func_name, int new_node_index, int node_index, int value, int node_index_value)
+size_t print_node_links_phys(list* list_ptr, char* dir_file_name)
 {
-    char* legend = (char*)calloc(100, sizeof(char));;  
-
-    char* key_word = nullptr;
-
-    if(strcmp(func_name, "push_after") == 0)
+    FILE* graph_txt = fopen(dir_file_name, "a+");
+    if(graph_txt == nullptr)
     {
-        key_word = "pushed after";
-    }
-    else
-    {
-        key_word = "NEW TASK";
+        printf("ERROR TO OPEN ");
+        return ERR_TO_OPEN_GRAPH_TXT;
     }
 
-    sprintf(legend, "Node_%d with value = %d was %s the Node_%d with value %d", new_node_index, value, key_word, node_index, node_index_value);
+    for(size_t node_index = 0; node_index < list_ptr->max_num_of_nodes; node_index++)
+    {
+        if(list_ptr->nodes_arr[node_index].next != -1)
+        {
+            fprintf(graph_txt, "\tnode_%d:f1 -> node_%d:f1[color=\"%s\", label = \"next node\"];\n", node_index, list_ptr->nodes_arr[node_index].next, RED_COLOR_DOT);
+        }
+        if(list_ptr->nodes_arr[node_index].prev != -1)
+        {
+            fprintf(graph_txt, "\tnode_%d:f0 -> node_%d:f0[color=\"%s\", label = \"prev node\"];\n", node_index, list_ptr->nodes_arr[node_index].prev, BLUE_COLOR_DOT);
+        }
+    }
 
-    return legend;
+    if(list_ptr->free_node != -1)
+    {
+        fprintf(graph_txt, "\tfree_node[shape = record, style=\"filled\" fillcolor=\"%s\", label = \"Free node\"];\n", FREE_NODE_COLOR);
+        fprintf(graph_txt, "\tfree_node -> node_%d:<name>[color=\"%s\", label = \"Free node\"];\n\n", list_ptr->free_node, FREE_NODE_COLOR);
+    }
+    if(list_ptr->head_node != -1)
+    {
+        fprintf(graph_txt, "\thead_node[shape = record, style=\"filled\" fillcolor=\"%s\", label = \"Head node\"];\n", HEAD_NODE_COLOR);
+        fprintf(graph_txt, "\thead_node -> node_%d:<name>[color=\"%s\", label = \"Head node\"];\n\n", list_ptr->head_node, HEAD_NODE_COLOR);
+    }
+    if(list_ptr->tail_node != -1)
+    {
+        fprintf(graph_txt, "\ttail_node[shape = record, style=\"filled\" fillcolor=\"%s\", label = \"Tail node\"];\n", TAIL_NODE_COLOR);
+        fprintf(graph_txt, "\ttail_node -> node_%d:<name>[color=\"%s\", label = \"Tail node\"];\n\n", list_ptr->tail_node, TAIL_NODE_COLOR);
+    }
+
+    if(fclose(graph_txt) == EOF)
+    {
+        return ERR_TO_CLOSE_GRAPH_TXT;
+    }
 }
 

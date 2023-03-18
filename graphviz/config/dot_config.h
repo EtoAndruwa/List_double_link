@@ -15,6 +15,7 @@
 #define HTML                 ".html"
 #define OUTPUT_NAME          "list"
 #define DEFAULT_LEGEND_TEXT  "Empty legend"
+#define SPLINES_DOT          "true"
 
 
 #endif

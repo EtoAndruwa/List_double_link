@@ -33,12 +33,22 @@ enum error_codes
     ERR_LIST_EMPTY       = 6,
 };
 
+enum return_code
+{
+    REALLOC_TRUE    = 1,
+    REALLOC_FALSE   = 2,
+
+
+};
+
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 list* list_ctor(size_t number_of_nodes);
-void push_after(list* list_str, size_t node_index, node_val_type value);
+void  push_after(list* list_str, size_t node_index, node_val_type value);
+void  list_dtor(list* list_str);
+size_t list_realloc(list* list_ptr);
 
 #endif

@@ -10,8 +10,9 @@ EXE_FLAG = valgrind -s --leak-check=yes --show-leak-kinds=all --log-file="./logs
 CC = g++
 TARGET = Dot
 
-PREF_OBJ = ./obj/
-PREF_SRC = ./src/
+PREF_OBJ  = ./obj/
+PREF_SRC  = ./src/
+
 
 SRC = $(wildcard $(PREF_SRC)*.cpp)
 OBJ = $(patsubst $(PREF_SRC)%.cpp, $(PREF_OBJ)%.o, $(SRC))
@@ -25,8 +26,7 @@ $(PREF_OBJ)%.o : $(PREF_SRC)%.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean: 
-	rm $(TARGET).exe $(PREF_OBJ)*.o ./graph_dumps/images/*.jpg ./graph_dumps/txt/*.txt ./graph_dumps/html_output.html ./graph_dumps/image_list.txt
-
+	rm $(TARGET).exe $(PREF_OBJ)*.o ./graph_dumps/images/*.jpg ./graph_dumps/txt/*.txt ./graph_dumps/html_output.html ./graph_dumps/image_list.txt 	
 clean_files:
 	rm ./graph_dumps/images/*.jpg ./graph_dumps/txt/*.txt ./graph_dumps/html_output.html ./graph_dumps/image_list.txt
 
