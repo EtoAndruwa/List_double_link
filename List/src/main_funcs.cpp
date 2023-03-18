@@ -234,13 +234,22 @@ size_t delete_node(list* list_ptr, size_t node_index)
 
     if(node_index == list_ptr->tail_node && list_ptr->cur_num_of_nodes != 1)
     {
+        printf("YES\n   ");
         list_ptr->tail_node = list_ptr->nodes_arr[node_index].prev;
         list_ptr->nodes_arr[node_index].value = POISON;
-        list_ptr->nodes_arr[node_index].next  = list_ptr->free_node;
-        list_ptr->nodes_arr[prev_node_index].next = -1;
+        list_ptr->nodes_arr[node_index].next = list_ptr->free_node;
+        list_ptr->nodes_arr[list_ptr->tail_node].next = -1;
         list_ptr->nodes_arr[node_index].prev = -1;
         list_ptr->free_node = node_index;
-        list_ptr->cur_num_of_nodes--;
+    }
+    else if(node_index == list_ptr->head_node && list_ptr->cur_num_of_nodes != 1)
+    {
+        list_ptr->head_node = list_ptr->nodes_arr[node_index].next;
+        list_ptr->nodes_arr[node_index].value = POISON;
+        list_ptr->nodes_arr[next_node_index].prev  = -1;
+        list_ptr->nodes_arr[node_index].next = list_ptr->free_node;
+        list_ptr->nodes_arr[node_index].prev = -1;
+        list_ptr->free_node = node_index;
     }
     else if(list_ptr->tail_node == list_ptr->head_node)  
     {
@@ -250,23 +259,25 @@ size_t delete_node(list* list_ptr, size_t node_index)
         list_ptr->free_node = node_index;
         list_ptr->head_node = -1;
         list_ptr->tail_node = -1;
-        list_ptr->cur_num_of_nodes--;
     }
     else
-    {
+    {   
+        printf("LOL\n");
         list_ptr->nodes_arr[node_index].value = POISON;
-        list_ptr->nodes_arr[next_node_index].prev = list_ptr->nodes_arr[node_index].prev;
-        list_ptr->nodes_arr[prev_node_index].next = list_ptr->nodes_arr[node_index].next;
+        if(list_ptr->nodes_arr[node_index].prev != -1)
+        {
+            list_ptr->nodes_arr[next_node_index].prev = list_ptr->nodes_arr[node_index].prev;
+        }
+        if(list_ptr->nodes_arr[node_index].next != -1)
+        {
+            list_ptr->nodes_arr[prev_node_index].next = list_ptr->nodes_arr[node_index].next;
+        }
         list_ptr->nodes_arr[node_index].next  = list_ptr->free_node;
         list_ptr->nodes_arr[node_index].prev = -1;
         list_ptr->free_node = node_index;
-        list_ptr->cur_num_of_nodes--;
     }
+    list_ptr->cur_num_of_nodes--;
 
     char* legend = create_legend(__func__ , 0, node_index, 0, node_value);
     create_graph_jpg(list_ptr, legend);
 }
-
-
-
-
