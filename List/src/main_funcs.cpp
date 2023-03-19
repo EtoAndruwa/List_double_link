@@ -389,20 +389,47 @@ size_t make_linear(list* list_ptr)
     }
 }
 
-void put_to_correct_phys(list* list_ptr, int cur_logical_index)
+void put_to_correct_phys(list* list_ptr, int first_logical_index)
 {
-    int cur_physical_index = get_phys_by_log(list_ptr, cur_logical_index);
+    int first_node = get_phys_by_log(list_ptr, first_logical_index); // physical index of first node
 
-    if(cur_physical_index == cur_logical_index)
+    if(first_node == first_logical_index)
     {
         return;
     } 
     else
     {
-        int second_node = get_log_by_phys(list_ptr, cur_logical_index);
-        if(second_node == NODE_DOES_NOT_EXIST)
+        int second_node = get_log_by_phys(list_ptr, first_logical_index); // if the node is free one
+        if(second_node == NODE_DOES_NOT_EXIST) // is not free
         {
-            
+            int second_next = list_ptr->nodes_arr[first_logical_index].next; // next free node
+            int second_prev = get_prev_free(list_ptr, first_logical_index);  // prev of the this free node
+            int first_prev = list_ptr->nodes_arr[first_node].prev;
+            int first_next = list_ptr->nodes_arr[first_node].next;
+
+            list_ptr->nodes_arr[first_logical_index].value = list_ptr->nodes_arr[first_node].value;
+            list_ptr->nodes_arr[first_logical_index].next  = first_next;
+            list_ptr->nodes_arr[first_logical_index].prev  = first_prev;
+            list_ptr->nodes_arr[first_prev].next = first_logical_index;
+            list_ptr->nodes_arr[first_next].prev = first_logical_index;
+
+            list_ptr->nodes_arr[first_node].value = POISON;
+            list_ptr->nodes_arr[first_node].prev = -1;
+            list_ptr->nodes_arr[first_node].next = second_next;
+            list_ptr->nodes_arr[second_prev].next = first_node;
+
+            if(first_logical_index == list_ptr->free_node)
+            {
+                list_ptr->free_node = first_node;
+            }
+            if(first_node == list_ptr->tail_node)
+            {
+                list_ptr->tail_node = first_logical_index;
+            }
+            if(first_node == list_ptr->head_node)
+            {
+                list_ptr->head_node = first_logical_index;
+            }
         }
         else    
         {
@@ -431,32 +458,24 @@ size_t check_is_linear(list* list_ptr)
 
 void exchange_nodes(list* list_ptr, int first_node, int second_node)
 {
-    if(first_node == list_ptr->head_node)
-    {
+    int second_value = list_ptr->nodes_arr[second_node].value;
+    int second_next = list_ptr->nodes_arr[second_node].next;
+    int second_prev = list_ptr->nodes_arr[second_node].prev;
 
-    }
-    else
-    {
-        int second_value = list_ptr->nodes_arr[second_node].value;
-        int second_next = list_ptr->nodes_arr[second_node].next;
-        int second_prev = list_ptr->nodes_arr[second_node].prev;
+    int first_prev = list_ptr->nodes_arr[first_node].prev;
+    int first_next = list_ptr->nodes_arr[first_node].next;
 
-        int first_prev = list_ptr->nodes_arr[first_node].prev;
-        int first_next = list_ptr->nodes_arr[first_node].next;
+    list_ptr->nodes_arr[second_node].value = list_ptr->nodes_arr[first_node].value;
+    list_ptr->nodes_arr[first_node].value = second_value;
 
-        list_ptr->nodes_arr[second_node].value = list_ptr->nodes_arr[first_node].value;
-        list_ptr->nodes_arr[first_node].value = second_value;
+    list_ptr->nodes_arr[first_prev].next = second_node;
+    list_ptr->nodes_arr[second_next].prev = first_node;
+    
+    list_ptr->nodes_arr[second_node].prev =  first_prev;
+    list_ptr->nodes_arr[second_node].next =  first_node;
 
-        list_ptr->nodes_arr[first_prev].next = second_node;
-        list_ptr->nodes_arr[second_next].prev = first_node;
-        
-        list_ptr->nodes_arr[second_node].prev =  first_prev;
-        list_ptr->nodes_arr[second_node].next =  first_node;
-
-        list_ptr->nodes_arr[first_node].next = second_next;
-        list_ptr->nodes_arr[first_node].prev = second_node;
-
-    }
+    list_ptr->nodes_arr[first_node].next = second_next;
+    list_ptr->nodes_arr[first_node].prev = second_node;
 
     create_graph_jpg(list_ptr, "exchange");
 }
