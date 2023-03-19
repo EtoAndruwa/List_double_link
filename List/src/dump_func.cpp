@@ -13,6 +13,7 @@ void list_dump(list* list_str, const char* FUNC_NAME, size_t FUNC_LINE, const ch
     }
     else
     {
+    	fprintf(dump_log, "" );
         fprintf(dump_log, "\n\n====================STRUCT_DATA====================\n");
         fprintf(dump_log, "Struct error code: %ld (%s)\n", list_str->error_code, enum_to_string(list_str->error_code));
         fprintf(dump_log, "Head node index: %ld\n",list_str->head_node);
