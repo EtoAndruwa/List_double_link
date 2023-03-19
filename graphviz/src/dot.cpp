@@ -23,7 +23,7 @@ size_t graph_start(char* file_name) // writes the start of the .txt file
     }
 }
 
-size_t graph_end(char* file_name) // writes the end of the .txt file 
+size_t graph_end(char* file_name) // writes the end of the .txt file
 {
     FILE* graph_txt = fopen(file_name, "a+");
     if(graph_txt == nullptr)
@@ -43,35 +43,35 @@ size_t html_end(char* file_name) // writes the end of the html file
 {
     FILE* graph_txt = fopen(file_name, "a+");
     if(graph_txt == nullptr)
-    {   
+    {
         ERROR_MESSAGE(stderr, 1)
     }
     fprintf(graph_txt, "</pre></html>\n");
 
     if(fclose(graph_txt) == EOF)
     {
-        
+
     }
 }
 
-size_t hmtl_start(char* file_name) // writes the start of the html file 
+size_t hmtl_start(char* file_name) // writes the start of the html file
 {
     FILE* graph_txt = fopen(file_name, "a+");
     if(graph_txt == nullptr)
     {
-        
+
     }
     fprintf(graph_txt, "<!DOCTYPE HTML><pre>\n");
 
     if(fclose(graph_txt) == EOF)
     {
-        
+
     }
 }
 
-size_t print_node_data(list* list_ptr, char* file_name) // prints all datta about the list 
+size_t print_node_data(list* list_ptr, char* file_name) // prints all datta about the list
 {
-    FILE* graph_txt = fopen(file_name, "a+");   
+    FILE* graph_txt = fopen(file_name, "a+");
     if(graph_txt == nullptr)
     {
         return ERR_TO_OPEN_GRAPH_TXT;
@@ -110,7 +110,7 @@ size_t print_node_data(list* list_ptr, char* file_name) // prints all datta abou
     }
 }
 
-size_t print_node_links(list* list_ptr, char* file_name) // prints all the links of the list 
+size_t print_node_links(list* list_ptr, char* file_name) // prints all the links of the list
 {
     FILE* graph_txt = fopen(file_name, "a+");
     if(graph_txt == nullptr)
@@ -248,7 +248,7 @@ size_t create_html(char* file_name) // creates the whole html file at once
     html_end(dir_file_name);
 
     free(dir_file_name);
-    dir_file_name = nullptr;    
+    dir_file_name = nullptr;
 
     return 0;
 }
@@ -270,7 +270,7 @@ char* system_dot(char* file_name) // creates a dot function in order to call it 
     size_t total_lenght = size_of_dot + size_of_txt_file + size_of_jpg_file + size_of_flag + size_of_output_flag;
 
     char* system_cmd = (char*)calloc(total_lenght , sizeof(char));
-    
+
     strcpy(system_cmd, dot);
     strcat(system_cmd, txt_file);
     strcat(system_cmd, OUTPUT_FORMAT_FLAG);
@@ -285,7 +285,7 @@ char* system_dot(char* file_name) // creates a dot function in order to call it 
 
 
     char* file_with_ext = cat_file_directory(file_name, "", OUTPUT_FORMAT);
-    
+
     add_to_image_list(file_with_ext);
 
     free(file_with_ext);
@@ -305,7 +305,7 @@ size_t add_to_image_list(char* file_name) // adds the path to the image into the
     {
         ERROR_MESSAGE(stderr, 1);
     }
-    
+
     fprintf(graph_txt, "%s\n", path_to_write);
 
     if(fclose(graph_txt) == EOF)
@@ -325,9 +325,9 @@ size_t add_image_to_html(char* dir_file_name) // adds all images to the html at 
     if(graph_txt == nullptr)
     {
         ERROR_MESSAGE(stderr, 1);
-        return 1; 
+        return 1;
     }
-    
+
     get_size_file();
     char* buffer = get_tokens_into_buf();
     get_tokens(buffer, graph_txt);
@@ -336,7 +336,7 @@ size_t add_image_to_html(char* dir_file_name) // adds all images to the html at 
     if(fclose(graph_txt) == EOF)
     {
         ERROR_MESSAGE(stderr, 1);
-        return 1; 
+        return 1;
     }
 }
 
@@ -350,7 +350,7 @@ char* get_tokens_into_buf() // reads all tokens into the buffer
     }
     size_t size_of_file = get_size_file();
 
-    char* buffer_ptr = (char*)calloc(1, sizeof(char) * (size_of_file + 1)); 
+    char* buffer_ptr = (char*)calloc(1, sizeof(char) * (size_of_file + 1));
 
     fread(buffer_ptr, sizeof(char), size_of_file, image_list);
 
@@ -394,8 +394,8 @@ size_t get_tokens(char* buffer, FILE* file_tpr) // prints all the tokens into th
 {
     char* token = strtok(buffer," \n\r");
 
-    while (token != NULL)                        
-    {   
+    while (token != NULL)
+    {
         fprintf(file_tpr, "<div style =\"text-align: center;\"><h1>The image below %s</h1>\n", strstr(token, OUTPUT_NAME));
         fprintf(file_tpr, "<img src=\"%s\" alt=\"%s \"></div>\n", token, token);
         token = strtok(NULL, " \n\r");
@@ -414,15 +414,15 @@ size_t print_legend(char* legend_text, char* dir_file_name)
     }
 
     if(strcmp(legend_text, DEFAULT_LEGEND_TEXT) == 0)
-    {   
+    {
         fprintf(graph_txt, "\tnode_legend[shape = record, label = \"%s\"];\n", DEFAULT_LEGEND_TEXT);
     }
-    else    
+    else
     {
         fprintf(graph_txt, "\tnode_legend[shape=record , label = \"%s\"];\n", legend_text);
     }
-    
-       
+
+
     if(fclose(graph_txt) == EOF)
     {
         return ERR_TO_CLOSE_GRAPH_TXT;
@@ -431,7 +431,7 @@ size_t print_legend(char* legend_text, char* dir_file_name)
 
 char* create_legend(const char* func_name, int new_node_index, int node_index, int value, int node_index_value)
 {
-    char* legend = (char*)calloc(100, sizeof(char));;  
+    char* legend = (char*)calloc(100, sizeof(char));;
 
     if(strcmp(func_name, "push_after") == 0)
     {
@@ -469,14 +469,14 @@ size_t print_node_data_phys(list* list_ptr, char* dir_file_name)
         {
             node_bg_color = RED_BG_COLOR_DOT;
         }
-        
-        fprintf(graph_txt, "\tnode_%d[shape = record, style=\"filled\" fillcolor=\"%s\", label =\" {<name> node_%d} | { <f0> prev = %d } |{<here> value = %d}| { <f1> next = %d } \"];\n", 
+
+        fprintf(graph_txt, "\tnode_%d[shape = record, style=\"filled\" fillcolor=\"%s\", label =\" {<name> node_%d} | { <f0> prev = %d } |{<here> value = %d}| { <f1> next = %d } \"];\n",
             node_index, node_bg_color, node_index, list_ptr->nodes_arr[node_index].prev, list_ptr->nodes_arr[node_index].value, list_ptr->nodes_arr[node_index].next);
         fprintf(graph_txt, "\tnode_%d -> node_%d [style=invis]\n", node_index, node_index + 1);
     }
 
     int last_node_indes = list_ptr->max_num_of_nodes - 1;
-    if(last_node_indes == list_ptr->tail_node || last_node_indes == list_ptr->head_node || (list_ptr->nodes_arr[last_node_indes].prev != -1 && 
+    if(last_node_indes == list_ptr->tail_node || last_node_indes == list_ptr->head_node || (list_ptr->nodes_arr[last_node_indes].prev != -1 &&
         list_ptr->nodes_arr[last_node_indes].next != -1))
     {
         node_bg_color = BLUE_BG_COLOR_DOT;
@@ -485,7 +485,7 @@ size_t print_node_data_phys(list* list_ptr, char* dir_file_name)
     {
         node_bg_color = RED_BG_COLOR_DOT;
     }
-    fprintf(graph_txt, "\tnode_%d[shape = record, style=\"filled\" fillcolor=\"%s\", label =\" {<name> node_%d} | { <f0> prev = %d } |{<here> value = %d}| { <f1> next = %d } \"];\n", 
+    fprintf(graph_txt, "\tnode_%d[shape = record, style=\"filled\" fillcolor=\"%s\", label =\" {<name> node_%d} | { <f0> prev = %d } |{<here> value = %d}| { <f1> next = %d } \"];\n",
         last_node_indes, node_bg_color, last_node_indes, list_ptr->nodes_arr[last_node_indes].prev, list_ptr->nodes_arr[last_node_indes].value, list_ptr->nodes_arr[last_node_indes].next);
 
     if(fclose(graph_txt) == EOF)
@@ -536,4 +536,3 @@ size_t print_node_links_phys(list* list_ptr, char* dir_file_name)
         return ERR_TO_CLOSE_GRAPH_TXT;
     }
 }
-
