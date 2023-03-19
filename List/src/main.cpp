@@ -11,6 +11,8 @@ int main()
     push_before(list_str, 1, 400);
     search_logical(list_str, 400);
     search_physical(list_str, 400);
+    get_phys_by_log(list_str, 0);
+    get_log_by_phys(list_str, 0);
 
     create_html("html_output");
 

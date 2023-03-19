@@ -51,5 +51,7 @@ size_t list_realloc(list* list_ptr);
 void   push_before(list* list_ptr, size_t node_index, node_val_type value);
 size_t search_physical(list* list_ptr, int value);
 size_t search_logical(list* list_ptr, int value);
+size_t get_phys_by_log(list* list_ptr, int logical_index);
+size_t get_log_by_phys(list* list_ptr, int physical_index);
 
 #endif

@@ -317,3 +317,52 @@ size_t search_logical(list* list_ptr, int value)
         printf("Node with value %d was not found\n", value);
     }
 }
+
+size_t get_phys_by_log(list* list_ptr, int logical_index)
+{
+    int current_node = list_ptr->head_node;
+    int logical_id = 0;
+    size_t flag_found = 0;
+
+    while(current_node != -1)
+    {
+        if(logical_id == logical_index)
+        {
+            printf("get_phys_by_log: Node with logical id %d was found with physical id %d\n", logical_index, current_node);
+            flag_found = 1;
+        }
+        logical_id++;
+        current_node = list_ptr->nodes_arr[current_node].next;
+    }
+
+    if(flag_found == 0)
+    {
+        printf("Node with logical id %d was not found\n", logical_index);
+    }
+}
+
+size_t get_log_by_phys(list* list_ptr, int physical_index)
+{
+    int current_node = list_ptr->head_node;
+    int logical_id = 0;
+    size_t flag_found = 0;
+
+    while(current_node != -1)
+    {
+        if(current_node == physical_index)
+        {
+            printf("get_log_by_phys: Node with physical id %d was found with logical id %d\n", current_node, logical_id);
+            flag_found = 1;
+        }
+        logical_id++;
+        current_node = list_ptr->nodes_arr[current_node].next;
+    }
+
+    if(flag_found == 0)
+    {
+        printf("Node with physical id %d was not found\n", physical_index);
+    }
+}
+
+
+
