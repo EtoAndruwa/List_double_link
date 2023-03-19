@@ -273,3 +273,24 @@ size_t delete_node(list* list_ptr, size_t node_index)
     char* legend = create_legend(__func__ , 0, node_index, 0, node_value);
     create_graph_jpg(list_ptr, legend);
 }
+
+size_t search_logical(list* list_ptr, int value)
+{
+    int current_node = list_ptr->head_node;
+    size_t flag_found = 0;
+
+    while(current_node != -1)
+    {
+        if(list_ptr->nodes_arr[current_node].value == value)
+        {
+            printf("Node with value %d was found on logical id %d\n", value, current_node);
+            flag_found = 1;
+        }
+         current_node = list_ptr->nodes_arr[current_node].next;
+    }
+
+    if(flag_found == 0)
+    {
+        printf("Node with value %d was not found\n", value);
+    }
+}

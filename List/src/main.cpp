@@ -9,9 +9,7 @@ int main()
     push_before(list_str, 1, 200);
     push_before(list_str, 0, 300);
     push_before(list_str, 1, 400);
-    delete_node(list_str, 0);
-    delete_node(list_str, 1);
-    delete_node(list_str, 2);
+    search_logical(list_str, 400);
 
     create_html("html_output");
 

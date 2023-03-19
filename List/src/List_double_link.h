@@ -49,5 +49,6 @@ void   push_after(list* list_str, size_t node_index, node_val_type value);
 void   list_dtor(list* list_str);
 size_t list_realloc(list* list_ptr);
 void   push_before(list* list_ptr, size_t node_index, node_val_type value);
+size_t search_logical(list* list_ptr, int value);
 
 #endif

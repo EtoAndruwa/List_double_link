@@ -271,6 +271,10 @@ char* system_dot(char* file_name) // creates a dot function in order to call it 
     char* system_cmd = (char*)calloc(total_lenght , sizeof(char));
 
     strcpy(system_cmd, dot);
+
+
+
+
     strcat(system_cmd, txt_file);
     strcat(system_cmd, OUTPUT_FORMAT_FLAG);
     strcat(system_cmd, flag);
