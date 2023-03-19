@@ -191,9 +191,6 @@ size_t create_graph_jpg(list* list_ptr, char* legend) // prints all data about t
     dir_file_name = nullptr;
     free(file_name);
     file_name = nullptr;
-    free(legend);
-    legend = nullptr;
-
 
     memset(int_str_equivalent, 0, 11);
     sprintf(int_str_equivalent, "%d_%s", number_of_images, "physical");
@@ -201,7 +198,7 @@ size_t create_graph_jpg(list* list_ptr, char* legend) // prints all data about t
     dir_file_name = cat_file_directory(file_name, TXT_FOLDER, INPUT_FORMAT);
 
     graph_start(dir_file_name);
-    // print_legend(legend, dir_file_name);
+    print_legend(legend, dir_file_name);
     print_node_data_phys(list_ptr, dir_file_name);
     print_node_links_phys(list_ptr, dir_file_name);
     graph_end(dir_file_name);
@@ -213,6 +210,8 @@ size_t create_graph_jpg(list* list_ptr, char* legend) // prints all data about t
     file_name = nullptr;
     free(legend);
     legend = nullptr;
+
+
 
     number_of_images++;
 
@@ -440,6 +439,10 @@ char* create_legend(const char* func_name, int new_node_index, int node_index, i
     else if(strcmp(func_name, "delete_node") == 0)
     {
         sprintf(legend, "Node_%d with value = %d was deleted from the list" ,node_index, node_index_value);
+    }
+    else if(strcmp(func_name, "push_before") == 0)
+    {
+        sprintf(legend, "Node_%d with value = %d was pushed before the Node_%d with value %d", new_node_index, value, node_index, node_index_value);
     }
     else
     {

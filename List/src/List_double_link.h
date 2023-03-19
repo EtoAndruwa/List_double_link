@@ -37,8 +37,6 @@ enum return_code
 {
     REALLOC_TRUE    = 1,
     REALLOC_FALSE   = 2,
-
-
 };
 
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -46,9 +44,10 @@ enum return_code
 
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-list* list_ctor(size_t number_of_nodes);
-void  push_after(list* list_str, size_t node_index, node_val_type value);
-void  list_dtor(list* list_str);
+list*  list_ctor(size_t number_of_nodes);
+void   push_after(list* list_str, size_t node_index, node_val_type value);
+void   list_dtor(list* list_str);
 size_t list_realloc(list* list_ptr);
+void   push_before(list* list_ptr, size_t node_index, node_val_type value);
 
 #endif
