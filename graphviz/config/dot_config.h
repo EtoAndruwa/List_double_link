@@ -17,5 +17,4 @@
 #define DEFAULT_LEGEND_TEXT  "Empty legend"
 #define SPLINES_DOT          "true"
 
-
 #endif
