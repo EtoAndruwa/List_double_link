@@ -274,7 +274,7 @@ size_t delete_node(list* list_ptr, size_t node_index)
     create_graph_jpg(list_ptr, legend);
 }
 
-size_t search_logical(list* list_ptr, int value)
+size_t search_physical(list* list_ptr, int value)
 {
     int current_node = list_ptr->head_node;
     size_t flag_found = 0;
@@ -295,9 +295,25 @@ size_t search_logical(list* list_ptr, int value)
     }
 }
 
+size_t search_logical(list* list_ptr, int value)
+{
+    int current_node = list_ptr->head_node;
+    int logical_id = 0;
+    size_t flag_found = 0;
 
+    while(current_node != -1)
+    {
+        if(list_ptr->nodes_arr[current_node].value == value)
+        {
+            printf("Node with value %d was found on logical id %d\n", value, logical_id);
+            flag_found = 1;
+        }
+        logical_id++;
+         current_node = list_ptr->nodes_arr[current_node].next;
+    }
 
-
-
-
-
+    if(flag_found == 0)
+    {
+        printf("Node with value %d was not found\n", value);
+    }
+}
