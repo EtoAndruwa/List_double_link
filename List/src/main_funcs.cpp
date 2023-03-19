@@ -294,3 +294,10 @@ size_t search_logical(list* list_ptr, int value)
         printf("Node with value %d was not found\n", value);
     }
 }
+
+
+
+
+
+
+
