@@ -583,21 +583,51 @@ size_t get_prev_free(list* list_ptr, int this_free_index)
 
 size_t put_head(list* list_ptr)
 {
+    int first_node_id = 0;
     int second_node = get_log_by_phys(list_ptr, 0); // if the node is free one
+
     if(second_node == NODE_DOES_NOT_EXIST) // is not free
     {
         put_to_free(list_ptr, 0, list_ptr->head_node);
     }
     else    
     {
-        int second_value = list_ptr->nodes_arr[second_node].value;
-        int second_next  = list_ptr->nodes_arr[second_node].next;
-        int second_prev  = list_ptr->nodes_arr[second_node].prev;
+        int first_node_val  = list_ptr->nodes_arr[first_node_id].value;
+        int first_node_prev = list_ptr->nodes_arr[first_node_id].prev;
+        int first_node_next = list_ptr->nodes_arr[first_node_id].next;
 
+        int head_id   = list_ptr->head_node;
+        int head_next = list_ptr->nodes_arr[list_ptr->head_node].next;
 
+        list_ptr->nodes_arr[first_node_id].prev  = -1;
+        list_ptr->nodes_arr[first_node_id].value = list_ptr->nodes_arr[head_id].value;
+        list_ptr->nodes_arr[head_id].value = first_node_val;
 
-        list_ptr->head_node = second_node;
+        if(first_node_prev == head_id)
+        {
+            list_ptr->nodes_arr[head_id].next  = first_node_next;
+            list_ptr->nodes_arr[head_id].prev  = first_node_id;
+            list_ptr->nodes_arr[first_node_id].prev  = -1;
+            list_ptr->nodes_arr[first_node_id].next = head_id;
+            list_ptr->nodes_arr[first_node_next].prev = head_id;
+        }
+        else
+        {
+            list_ptr->nodes_arr[head_id].next  = first_node_next;
+            list_ptr->nodes_arr[head_id].prev  = first_node_prev;
+
+            list_ptr->nodes_arr[first_node_id].next = head_next;
+            list_ptr->nodes_arr[first_node_id].prev = -1;
+
+            list_ptr->nodes_arr[head_next].prev = first_node_id;
+            list_ptr->nodes_arr[first_node_prev].next = head_id;
+            list_ptr->nodes_arr[first_node_next].prev = head_id;
+        }
+
+        list_ptr->head_node = first_node_id;
     }
+
+    create_graph_jpg(list_ptr, "put head");
 }
 
 size_t put_tail(list* list_ptr)

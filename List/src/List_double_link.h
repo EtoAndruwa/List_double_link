@@ -86,4 +86,6 @@ void exchange_neighbor(list* list_ptr, int first_node, int second_node);
 
 void exchange_stranger(list* list_ptr, int first_node, int second_node);
 
+size_t put_head(list* list_ptr);
+
 #endif
