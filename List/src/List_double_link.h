@@ -70,8 +70,6 @@ size_t get_log_by_phys(list* list_ptr, int physical_index);
 size_t check_is_linear(list* list_ptr);
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-void exchange_nodes(list* list_ptr, int first_node, int second_node);
-
 size_t get_prev_free(list* list_ptr, int this_free_index);
 
 void put_to_correct_phys(list* list_ptr, int cur_logical_index);
@@ -83,5 +81,9 @@ void put_to_free(list* list_ptr, int first_logical_index, int first_phys_index);
 void put_to_free(list* list_ptr, int first_logical_index, int first_node_phys);
 
 size_t put_tail(list* list_ptr);
+
+void exchange_neighbor(list* list_ptr, int first_node, int second_node);
+
+void exchange_stranger(list* list_ptr, int first_node, int second_node);
 
 #endif

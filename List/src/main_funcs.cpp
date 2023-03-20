@@ -431,7 +431,64 @@ size_t check_is_linear(list* list_ptr) // checks the index for being linear
     }
 }
 
-void exchange_nodes(list* list_ptr, int first_node, int second_node)
+void exchange_stranger(list* list_ptr, int first_node, int second_node)
+{
+    int second_value = list_ptr->nodes_arr[second_node].value;
+    int second_next = list_ptr->nodes_arr[second_node].next;
+    int second_prev = list_ptr->nodes_arr[second_node].prev;
+
+    int first_prev = list_ptr->nodes_arr[first_node].prev;
+    int first_next = list_ptr->nodes_arr[first_node].next;
+    int first_value = list_ptr->nodes_arr[first_node].value;
+
+    list_ptr->nodes_arr[second_node].value = first_value;
+    list_ptr->nodes_arr[first_node].value = second_value;
+
+    if(first_prev != -1)
+    {
+        list_ptr->nodes_arr[first_prev].next = second_node;
+    }
+    if(first_next != -1)
+    {
+        list_ptr->nodes_arr[first_next].prev = second_node;
+    }
+    if(second_next != -1)
+    {
+        list_ptr->nodes_arr[second_next].prev = first_node;
+    } 
+    if(second_prev != -1)
+    {
+        list_ptr->nodes_arr[second_prev].next = first_node;
+    } 
+    
+    list_ptr->nodes_arr[second_node].prev =  first_prev;
+    list_ptr->nodes_arr[second_node].next =  first_next;
+
+    list_ptr->nodes_arr[first_node].next = second_next;
+    list_ptr->nodes_arr[first_node].prev = second_prev;
+    
+    if(first_node == list_ptr->head_node)
+    {
+        list_ptr->head_node = second_node;
+    }
+    if(first_node == list_ptr->tail_node)
+    {
+        list_ptr->tail_node = second_node;
+    }
+    if(second_node == list_ptr->head_node)
+    {
+        list_ptr->head_node = first_node;
+    }
+    if(second_node == list_ptr->tail_node)
+    {
+        list_ptr->tail_node = first_node;
+    }
+
+    char* legend = create_legend(__func__, first_node, first_value, second_node, second_value);
+    create_graph_jpg(list_ptr, legend);
+}
+
+void exchange_neighbor(list* list_ptr, int first_node, int second_node)
 {
     int second_value = list_ptr->nodes_arr[second_node].value;
     int second_next = list_ptr->nodes_arr[second_node].next;
@@ -475,7 +532,7 @@ void exchange_nodes(list* list_ptr, int first_node, int second_node)
         list_ptr->tail_node = first_node;
     }
 
-    create_graph_jpg(list_ptr, "exchange");
+    create_graph_jpg(list_ptr, "exchange neighbor");
 }
 
 void put_to_free(list* list_ptr, int first_logical_index, int first_phys_index)
@@ -551,34 +608,35 @@ size_t put_tail(list* list_ptr)
     }
     else    
     {
-        printf("HERE\n\n");
-        second_node = list_ptr->cur_num_of_nodes - 1;
+        exchange_nodes(list_ptr, list_ptr->tail_node, list_ptr->cur_num_of_nodes - 1);
+        // printf("HERE\n\n");
+        // second_node = list_ptr->cur_num_of_nodes - 1;
 
-        int second_value = list_ptr->nodes_arr[second_node].value;
-        int second_next  = list_ptr->nodes_arr[second_node].next;
-        int second_prev  = list_ptr->nodes_arr[second_node].prev;
+        // int second_value = list_ptr->nodes_arr[second_node].value;
+        // int second_next  = list_ptr->nodes_arr[second_node].next;
+        // int second_prev  = list_ptr->nodes_arr[second_node].prev;
 
-        int tail_prev = list_ptr->nodes_arr[list_ptr->tail_node].prev;
+        // int tail_prev = list_ptr->nodes_arr[list_ptr->tail_node].prev;
 
-        list_ptr->nodes_arr[second_node].value = list_ptr->nodes_arr[list_ptr->tail_node].value;
-        list_ptr->nodes_arr[second_node].next = list_ptr->nodes_arr[list_ptr->tail_node].next;
-        list_ptr->nodes_arr[second_node].prev = list_ptr->nodes_arr[list_ptr->tail_node].prev;
+        // list_ptr->nodes_arr[second_node].value = list_ptr->nodes_arr[list_ptr->tail_node].value;
+        // list_ptr->nodes_arr[second_node].next = list_ptr->nodes_arr[list_ptr->tail_node].next;
+        // list_ptr->nodes_arr[second_node].prev = list_ptr->nodes_arr[list_ptr->tail_node].prev;
 
-        list_ptr->nodes_arr[list_ptr->tail_node].value = second_value;
-        list_ptr->nodes_arr[list_ptr->tail_node].next  = second_next;
-        list_ptr->nodes_arr[list_ptr->tail_node].prev  = second_prev;
+        // list_ptr->nodes_arr[list_ptr->tail_node].value = second_value;
+        // list_ptr->nodes_arr[list_ptr->tail_node].next  = second_next;
+        // list_ptr->nodes_arr[list_ptr->tail_node].prev  = second_prev;
 
         
-        list_ptr->nodes_arr[tail_prev].next = second_node;
-        list_ptr->nodes_arr[second_prev].next = list_ptr->tail_node; 
+        // list_ptr->nodes_arr[tail_prev].next = second_node;
+        // list_ptr->nodes_arr[second_prev].next = list_ptr->tail_node; 
 
-        printf("HERE2\n\n");
-        // if(second_next != list_ptr->tail_node)
-        // {
-        //     list_ptr->nodes_arr[second_next].prev = list_ptr->tail_node;
-        // }
+        // printf("HERE2\n\n");
+        // // if(second_next != list_ptr->tail_node)
+        // // {
+        // //     list_ptr->nodes_arr[second_next].prev = list_ptr->tail_node;
+        // // }
 
-        list_ptr->tail_node = second_node;
+        // list_ptr->tail_node = second_node;
     }
 }
 
