@@ -36,17 +36,16 @@ int main()
     // create_graph_jpg(list_str, "");
     push_after(list_str, 0, 100);
     push_after(list_str, 0, 200); // 1
-    push_after(list_str, 1, 300); // 2
-    delete_node(list_str, 0);
-    push_after(list_str, 2, 100); // 2
-    push_after(list_str, 0, 300); // 3
+    push_before(list_str, 1, 300); // 2
+    // push_after(list_str, 2, 200); // 2
+    // push_after(list_str, 0, 300); // 3
     // push_after(list_str, 3, 500); // 4
     // delete_node(list_str, 3);
     // push_after(list_str, 4, 400);
     // delete_node(list_str, 0);
     // push_after(list_str, 3, 100);
 
-    put_head(list_str);
+    make_linear(list_str);
     // push_after(list_str, 2, 400);
     // exchange_neighbor(list_str, 1, 2);
     // exchange_neighbor(list_str, 2, 1);

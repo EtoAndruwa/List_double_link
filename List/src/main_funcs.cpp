@@ -383,38 +383,26 @@ size_t make_linear(list* list_ptr)
         return IS_LINEAR;
     }
 
-    put_tail(list_ptr);
-    // put_head(list_ptr);
-    // for(size_t node_index = 1; node_index < list_ptr->cur_num_of_nodes - 1; node_index++)
-    // {
-    //     put_to_correct_phys(list_ptr, node_index);
-    // }
+    if(list_ptr->tail_node == 0 && list_ptr->head_node == list_ptr->cur_num_of_nodes - 1)
+    {
+        change_head_tail(list_ptr, list_ptr->head_node, list_ptr->tail_node);
+    }
+    else if((list_ptr->tail_node < list_ptr->head_node || list_ptr->tail_node == 0) && (list_ptr->head_node != list_ptr->cur_num_of_nodes - 1))
+    {
+        put_tail(list_ptr);
+        put_head(list_ptr);
+    }
+    else    
+    {
+        put_head(list_ptr);
+        put_tail(list_ptr);
+    }
+    for(size_t node_index = 1; node_index < list_ptr->cur_num_of_nodes - 1; node_index++)
+    {
+        c(list_ptr, node_index);
+    }
 }
 
-// void put_to_correct_phys(list* list_ptr, int first_log_index)
-// {
-//     int first_phys_index = get_phys_by_log(list_ptr, first_log_index); // physical index of first node
-
-//     if(first_phys_index == first_log_index)
-//     {
-//         return;
-//     } 
-//     else
-//     {
-//         int second_node = get_log_by_phys(list_ptr, first_log_index); // if the node is free one
-
-//         if(second_node == NODE_DOES_NOT_EXIST) // is not free
-//         {
-//             put_to_free(list_ptr, first_log_index, first_phys_index);
-//         }
-//         else    
-//         {
-//             exchange_nodes(list_ptr, first_phys_index, first_log_index);
-//         }
-//     }
-
-//     create_graph_jpg(list_ptr, "put");
-// }
 
 size_t check_is_linear(list* list_ptr) // checks the index for being linear
 {   
@@ -586,7 +574,11 @@ size_t put_head(list* list_ptr)
     int first_node_id = 0;
     int second_node = get_log_by_phys(list_ptr, 0); // if the node is free one
 
-    if(second_node == NODE_DOES_NOT_EXIST) // is not free
+    if(first_node_id == list_ptr->head_node)
+    {
+        return 0;
+    }
+    else if(second_node == NODE_DOES_NOT_EXIST) // is not free
     {
         put_to_free(list_ptr, 0, list_ptr->head_node);
     }
@@ -635,7 +627,11 @@ size_t put_tail(list* list_ptr)
     int max_node_id = list_ptr->cur_num_of_nodes - 1;
     int second_node = get_log_by_phys(list_ptr, max_node_id); // if the node is free one
 
-    if(second_node == NODE_DOES_NOT_EXIST) // is not free
+    if(max_node_id == list_ptr->tail_node)
+    {
+        return 0;
+    }
+    else if(second_node == NODE_DOES_NOT_EXIST) // is not free
     {
         put_to_free(list_ptr, list_ptr->tail_node, max_node_id);
     }
@@ -676,3 +672,25 @@ size_t put_tail(list* list_ptr)
     create_graph_jpg(list_ptr, "put tail");
 }
 
+void change_head_tail(list* list_ptr, int head_id, int tail_id)
+{
+    int tail_prev = list_ptr->nodes_arr[tail_id].prev;
+    int tail_val  = list_ptr->nodes_arr[tail_id].value;
+    int head_next = list_ptr->nodes_arr[head_id].next;
+
+    list_ptr->nodes_arr[tail_id].value = list_ptr->nodes_arr[head_id].value;
+    list_ptr->nodes_arr[tail_id].next = list_ptr->nodes_arr[head_id].next;
+    list_ptr->nodes_arr[tail_id].prev = -1;
+
+    list_ptr->nodes_arr[tail_prev].next = head_id;
+    list_ptr->nodes_arr[head_next].prev = tail_id;
+    list_ptr->nodes_arr[head_id].value = tail_val;
+    list_ptr->nodes_arr[head_id].prev = tail_prev;
+    list_ptr->nodes_arr[head_id].next = -1;
+
+    list_ptr->head_node = tail_id;
+    list_ptr->tail_node = head_id;
+
+
+    create_graph_jpg(list_ptr, "change_head_tail");
+}

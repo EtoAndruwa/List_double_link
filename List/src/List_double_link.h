@@ -72,8 +72,6 @@ size_t check_is_linear(list* list_ptr);
 
 size_t get_prev_free(list* list_ptr, int this_free_index);
 
-void put_to_correct_phys(list* list_ptr, int cur_logical_index);
-
 size_t make_linear(list* list_ptr);
 
 void put_to_free(list* list_ptr, int first_logical_index, int first_phys_index);
@@ -87,5 +85,7 @@ void exchange_neighbor(list* list_ptr, int first_node, int second_node);
 void exchange_stranger(list* list_ptr, int first_node, int second_node);
 
 size_t put_head(list* list_ptr);
+
+void change_head_tail(list* list_ptr, int head_id, int tail_id);
 
 #endif
