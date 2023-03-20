@@ -391,29 +391,30 @@ size_t make_linear(list* list_ptr)
     // }
 }
 
-void put_to_correct_phys(list* list_ptr, int first_log_index)
-{
-    int first_phys_index = get_phys_by_log(list_ptr, first_log_index); // physical index of first node
+// void put_to_correct_phys(list* list_ptr, int first_log_index)
+// {
+//     int first_phys_index = get_phys_by_log(list_ptr, first_log_index); // physical index of first node
 
-    if(first_phys_index == first_log_index)
-    {
-        return;
-    } 
-    else
-    {
-        int second_node = get_log_by_phys(list_ptr, first_log_index); // if the node is free one
-        if(second_node == NODE_DOES_NOT_EXIST) // is not free
-        {
-            put_to_free(list_ptr, first_log_index, first_phys_index);
-        }
-        else    
-        {
-            exchange_nodes(list_ptr, first_phys_index, first_log_index);
-        }
-    }
+//     if(first_phys_index == first_log_index)
+//     {
+//         return;
+//     } 
+//     else
+//     {
+//         int second_node = get_log_by_phys(list_ptr, first_log_index); // if the node is free one
 
-    create_graph_jpg(list_ptr, "put");
-}
+//         if(second_node == NODE_DOES_NOT_EXIST) // is not free
+//         {
+//             put_to_free(list_ptr, first_log_index, first_phys_index);
+//         }
+//         else    
+//         {
+//             exchange_nodes(list_ptr, first_phys_index, first_log_index);
+//         }
+//     }
+
+//     create_graph_jpg(list_ptr, "put");
+// }
 
 size_t check_is_linear(list* list_ptr) // checks the index for being linear
 {   
@@ -601,42 +602,47 @@ size_t put_head(list* list_ptr)
 
 size_t put_tail(list* list_ptr)
 {
-    int second_node = get_log_by_phys(list_ptr, list_ptr->cur_num_of_nodes - 1); // if the node is free one
+    int max_node_id = list_ptr->cur_num_of_nodes - 1;
+    int second_node = get_log_by_phys(list_ptr, max_node_id); // if the node is free one
+
     if(second_node == NODE_DOES_NOT_EXIST) // is not free
     {
-        put_to_free(list_ptr, list_ptr->tail_node, list_ptr->cur_num_of_nodes - 1);
+        put_to_free(list_ptr, list_ptr->tail_node, max_node_id);
     }
     else    
     {
-        exchange_nodes(list_ptr, list_ptr->tail_node, list_ptr->cur_num_of_nodes - 1);
-        // printf("HERE\n\n");
-        // second_node = list_ptr->cur_num_of_nodes - 1;
+        int last_node_val  = list_ptr->nodes_arr[max_node_id].value;
+        int last_node_prev = list_ptr->nodes_arr[max_node_id].prev;
+        int last_node_next = list_ptr->nodes_arr[max_node_id].next;
 
-        // int second_value = list_ptr->nodes_arr[second_node].value;
-        // int second_next  = list_ptr->nodes_arr[second_node].next;
-        // int second_prev  = list_ptr->nodes_arr[second_node].prev;
+        int tail_id   = list_ptr->tail_node;
+        int tail_prev = list_ptr->nodes_arr[list_ptr->tail_node].prev;
+        list_ptr->tail_node = max_node_id;
 
-        // int tail_prev = list_ptr->nodes_arr[list_ptr->tail_node].prev;
+        list_ptr->nodes_arr[max_node_id].next  = -1;
+        list_ptr->nodes_arr[max_node_id].value = list_ptr->nodes_arr[tail_id].value;
+        list_ptr->nodes_arr[tail_id].value = last_node_val;
 
-        // list_ptr->nodes_arr[second_node].value = list_ptr->nodes_arr[list_ptr->tail_node].value;
-        // list_ptr->nodes_arr[second_node].next = list_ptr->nodes_arr[list_ptr->tail_node].next;
-        // list_ptr->nodes_arr[second_node].prev = list_ptr->nodes_arr[list_ptr->tail_node].prev;
+        if(last_node_next == tail_id)
+        {
+            list_ptr->nodes_arr[tail_id].next  = max_node_id;
+            list_ptr->nodes_arr[tail_id].prev  = last_node_prev;
+            list_ptr->nodes_arr[max_node_id].prev    = tail_id;
+            list_ptr->nodes_arr[last_node_prev].next = tail_id;
+        }
+        else
+        {
+            list_ptr->nodes_arr[tail_id].next  = last_node_next;
+            list_ptr->nodes_arr[tail_id].prev  = last_node_prev;
 
-        // list_ptr->nodes_arr[list_ptr->tail_node].value = second_value;
-        // list_ptr->nodes_arr[list_ptr->tail_node].next  = second_next;
-        // list_ptr->nodes_arr[list_ptr->tail_node].prev  = second_prev;
+            list_ptr->nodes_arr[last_node_prev].next = tail_id;
+            list_ptr->nodes_arr[last_node_next].prev = tail_id;
 
-        
-        // list_ptr->nodes_arr[tail_prev].next = second_node;
-        // list_ptr->nodes_arr[second_prev].next = list_ptr->tail_node; 
-
-        // printf("HERE2\n\n");
-        // // if(second_next != list_ptr->tail_node)
-        // // {
-        // //     list_ptr->nodes_arr[second_next].prev = list_ptr->tail_node;
-        // // }
-
-        // list_ptr->tail_node = second_node;
+            list_ptr->nodes_arr[max_node_id].prev = tail_prev;
+            list_ptr->nodes_arr[tail_prev].next   = max_node_id;
+        }
     }
+
+    create_graph_jpg(list_ptr, "put tail");
 }
 
