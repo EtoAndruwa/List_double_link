@@ -78,8 +78,10 @@ void put_to_correct_phys(list* list_ptr, int cur_logical_index);
 
 size_t make_linear(list* list_ptr);
 
-void put_to_free(list* list_ptr, int first_logical_index);
+void put_to_free(list* list_ptr, int first_logical_index, int first_phys_index);
 
 void put_to_free(list* list_ptr, int first_logical_index, int first_node_phys);
+
+size_t put_tail(list* list_ptr);
 
 #endif

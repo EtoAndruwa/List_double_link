@@ -6,18 +6,13 @@ int main()
 
     list_str = list_ctor(3);
     push_after(list_str, 0, 100);
-    push_after(list_str, 0, 300);
-    push_after(list_str, 1, 200);
+    push_after(list_str, 0, 200);
+    delete_node(list_str, 0);
+    push_after(list_str, 1, 300);
+    push_after(list_str, 0, 400);
+    delete_node(list_str, 0);
     push_after(list_str, 2, 200);
-    delete_node(list_str, 1);
-    delete_node(list_str, 2);
-    push_after(list_str, 3, 300);
-    push_after(list_str, 2, 400);
-    push_after(list_str, 1, 500);
-    delete_node(list_str, 2);
-    exchange_nodes(list_str, 3, 1);
-    put_to_correct_phys(list_str, 2);
-    put_to_correct_phys(list_str, 3);
+    make_linear(list_str);
     // put_to_correct_phys(list_str, 1);
     // make_linear(list_str);
     // search_logical(list_str, 400);
