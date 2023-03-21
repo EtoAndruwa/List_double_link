@@ -11,12 +11,12 @@
 
 void push_after(list* list_ptr, size_t node_index, node_val_type value)
 {
-    list_realloc(list_ptr);
-    int new_node_index = list_ptr->free_node;
+    list_realloc(list_ptr, list_ptr->cur_num_of_nodes);
 
+    int new_node_index = list_ptr->free_node;
     if(node_index > list_ptr->max_num_of_nodes - 1)
     {
-        // printf("Index is out of array, try again\n");
+        printf("Index is out of array, try again\n");
         return;
     }
     else
@@ -36,6 +36,7 @@ void push_after(list* list_ptr, size_t node_index, node_val_type value)
             if(list_ptr->nodes_arr[node_index].prev == -1 && list_ptr->head_node != node_index)
             {
                 printf("Node does not exist");
+                return;
             }
             else
             {
@@ -59,60 +60,65 @@ void push_after(list* list_ptr, size_t node_index, node_val_type value)
         }
     }
 
+    check_is_linear(list_ptr);
+
     char* legend = create_legend(__func__ , new_node_index, node_index, value, list_ptr->nodes_arr[node_index].value);
     create_graph_jpg(list_ptr, legend);
 }
 
 void push_before(list* list_ptr, size_t node_index, node_val_type value)
 {
-  list_realloc(list_ptr);
-  int new_node_index = list_ptr->free_node;
+    list_realloc(list_ptr, list_ptr->cur_num_of_nodes);
+    int new_node_index = list_ptr->free_node;
 
-  if(node_index > list_ptr->max_num_of_nodes - 1)
-  {
-      // printf("Index is out of array, try again\n");
-      return;
-  }
-  else
-  {
-      if(list_ptr->head_node == -1)
-      {
-          list_ptr->head_node = list_ptr->free_node;
-          list_ptr->tail_node = list_ptr->free_node;
-          list_ptr->free_node = list_ptr->nodes_arr[list_ptr->free_node].next;
-          list_ptr->nodes_arr[list_ptr->head_node].value = value;
-          list_ptr->nodes_arr[list_ptr->head_node].next = -1;
-          list_ptr->nodes_arr[list_ptr->head_node].prev = -1;
-          list_ptr->cur_num_of_nodes++;
-      }
-      else
-      {
-          if(list_ptr->nodes_arr[node_index].prev == -1 && list_ptr->head_node != node_index)
-          {
-              printf("Node does not exist");
-          }
-          else
-          {
-              if(node_index == list_ptr->head_node)
-              {
-                  list_ptr->head_node = list_ptr->free_node;
-              }
-              list_ptr->nodes_arr[new_node_index].value = value;
-              list_ptr->free_node = list_ptr->nodes_arr[list_ptr->free_node].next;
-              list_ptr->nodes_arr[new_node_index].next = node_index;
-              list_ptr->nodes_arr[new_node_index].prev = list_ptr->nodes_arr[node_index].prev;
-              if(list_ptr->nodes_arr[node_index].prev != -1)
-              {
-                  list_ptr->nodes_arr[list_ptr->nodes_arr[node_index].prev].next = new_node_index;
-              }
-              list_ptr->nodes_arr[node_index].prev = new_node_index;
-              list_ptr->cur_num_of_nodes++;
-          }
-      }
-  }
+    if(node_index > list_ptr->max_num_of_nodes - 1)
+    {
+        printf("Index is out of array, try again\n");
+        return;
+    }
+    else
+    {
+        if(list_ptr->head_node == -1)
+        {
+            list_ptr->head_node = list_ptr->free_node;
+            list_ptr->tail_node = list_ptr->free_node;
+            list_ptr->free_node = list_ptr->nodes_arr[list_ptr->free_node].next;
+            list_ptr->nodes_arr[list_ptr->head_node].value = value;
+            list_ptr->nodes_arr[list_ptr->head_node].next = -1;
+            list_ptr->nodes_arr[list_ptr->head_node].prev = -1;
+            list_ptr->cur_num_of_nodes++;
+        }
+        else
+        {
+            if(list_ptr->nodes_arr[node_index].prev == -1 && list_ptr->head_node != node_index)
+            {
+                printf("Node does not exist");
+                return;
+            }
+            else
+            {
+                if(node_index == list_ptr->head_node)
+                {
+                    list_ptr->head_node = list_ptr->free_node;
+                }
+                list_ptr->nodes_arr[new_node_index].value = value;
+                list_ptr->free_node = list_ptr->nodes_arr[list_ptr->free_node].next;
+                list_ptr->nodes_arr[new_node_index].next = node_index;
+                list_ptr->nodes_arr[new_node_index].prev = list_ptr->nodes_arr[node_index].prev;
+                if(list_ptr->nodes_arr[node_index].prev != -1)
+                {
+                    list_ptr->nodes_arr[list_ptr->nodes_arr[node_index].prev].next = new_node_index;
+                }
+                list_ptr->nodes_arr[node_index].prev = new_node_index;
+                list_ptr->cur_num_of_nodes++;
+            }
+        }
+    }
 
-  char* legend = create_legend(__func__ , new_node_index, node_index, value, list_ptr->nodes_arr[node_index].value);
-  create_graph_jpg(list_ptr, legend);
+    check_is_linear(list_ptr);
+
+    char* legend = create_legend(__func__ , new_node_index, node_index, value, list_ptr->nodes_arr[node_index].value);
+    create_graph_jpg(list_ptr, legend);
 }
 
 list* list_ctor(size_t number_of_nodes)
@@ -155,11 +161,11 @@ list* list_ctor(size_t number_of_nodes)
     list_ptr->tail_node = -1;
 
     list_ptr->error_code = LIST_OK;
+    list_ptr->is_linear = false;
 }
 
 void list_dtor(list* list_ptr)
 {
-
     for(size_t i = 0; i < list_ptr->cur_num_of_nodes; i++)
     {
         list_ptr->nodes_arr[i].next  = POISON;
@@ -174,16 +180,32 @@ void list_dtor(list* list_ptr)
     list_ptr->error_code = POISON;
     list_ptr->cur_num_of_nodes = POISON;
     list_ptr->max_num_of_nodes = POISON;
+    list_ptr->is_linear = false;
 
     free(list_ptr);
     list_ptr = nullptr;
 }
 
-size_t list_realloc(list* list_ptr)
+size_t list_realloc(list* list_ptr, size_t new_size)
 {
-    if(list_ptr->cur_num_of_nodes == list_ptr->max_num_of_nodes)
+    int new_max_num = 0;
+
+    if(new_size == list_ptr->max_num_of_nodes)
     {
-        node* realloc_ptr = (node*)realloc(list_ptr->nodes_arr, list_ptr->max_num_of_nodes * 2 * sizeof(node));
+        new_max_num *= 2;
+    }
+    else if(new_size > list_ptr->max_num_of_nodes)
+    {
+        new_max_num = new_size;
+    }
+    else 
+    {
+        return REALLOC_FALSE;
+    }
+
+    if(new_max_num >= list_ptr->max_num_of_nodes)
+    {
+        node* realloc_ptr = (node*)realloc(list_ptr->nodes_arr, new_max_num * 2 * sizeof(node));
 
         if(realloc_ptr == nullptr)
         {
@@ -191,7 +213,7 @@ size_t list_realloc(list* list_ptr)
         }
         else
         {
-            list_ptr->max_num_of_nodes *= 2;
+            list_ptr->max_num_of_nodes = new_max_num;
             list_ptr->nodes_arr = realloc_ptr;
 
             for(size_t i = list_ptr->cur_num_of_nodes; i < list_ptr->max_num_of_nodes; i++)
@@ -217,6 +239,106 @@ size_t list_realloc(list* list_ptr)
     else
     {
         return REALLOC_FALSE;
+    }
+}
+
+size_t list_resize(list* list_ptr, size_t new_size)
+{
+    create_linear(list_ptr);
+
+    if(list_ptr->max_num_of_nodes > new_size)
+    {
+        if(new_size > 0)
+        {
+            if(new_size < list_ptr->cur_num_of_nodes)
+            {
+                node* new_node_arr = (node*)calloc(new_size, sizeof(node));
+
+                if(new_node_arr == nullptr)
+                {
+                    return ERR_RESIZE_NODE_ARR;
+                }
+
+                for(size_t node_id = 0; node_id < new_size; node_id++)
+                {
+                    new_node_arr[node_id].value = list_ptr->nodes_arr[node_id].value;
+                    new_node_arr[node_id].prev  = list_ptr->nodes_arr[node_id].prev;
+                    new_node_arr[node_id].next  = list_ptr->nodes_arr[node_id].next;
+                }
+
+                list_ptr->tail_node = new_size -1;
+                new_node_arr[list_ptr->tail_node].next = -1;
+                list_ptr->max_num_of_nodes = new_size;
+                list_ptr->cur_num_of_nodes = new_size;
+                list_ptr->free_node = -1;
+
+                free(list_ptr->nodes_arr);
+                list_ptr->nodes_arr = new_node_arr;
+            }
+            else if(new_size >=  list_ptr->cur_num_of_nodes)
+            {
+                node* new_node_arr = (node*)calloc(new_size, sizeof(node)); 
+
+                if(new_node_arr == nullptr)
+                {
+                    return ERR_RESIZE_NODE_ARR;
+                }
+
+                list_ptr->max_num_of_nodes = new_size;
+
+                for(size_t node_id = 0; node_id < list_ptr->cur_num_of_nodes; node_id++)
+                {
+                    new_node_arr[node_id].value = list_ptr->nodes_arr[node_id].value;
+                    new_node_arr[node_id].prev  = list_ptr->nodes_arr[node_id].prev;
+                    new_node_arr[node_id].next  = list_ptr->nodes_arr[node_id].next;
+                }
+
+                for(size_t i = list_ptr->cur_num_of_nodes; i < list_ptr->max_num_of_nodes; i++)
+                {
+                    if(i == (list_ptr->max_num_of_nodes - 1))
+                    {
+
+                        new_node_arr[i].next  = -1;
+                        new_node_arr[i].prev  = -1;
+                        new_node_arr[i].value = POISON;
+                    }
+                    else
+                    {
+                        new_node_arr[i].next  = i + 1;
+                        new_node_arr[i].prev  = -1;
+                        new_node_arr[i].value = POISON;
+                    }
+                }
+
+                list_ptr->free_node = list_ptr->cur_num_of_nodes;
+
+                free(list_ptr->nodes_arr);
+                list_ptr->nodes_arr = new_node_arr;
+            }
+        }      
+        else
+        {
+            list_ptr->tail_node = -1;
+            list_ptr->head_node = -1;
+            list_ptr->free_node = -1;
+
+            for(size_t node_id = 0; node_id < list_ptr->max_num_of_nodes; node_id++)
+            {
+                list_ptr->nodes_arr[node_id].next  = POISON;
+                list_ptr->nodes_arr[node_id].prev  = POISON;
+                list_ptr->nodes_arr[node_id].value = POISON; 
+            }
+
+            free(list_ptr->nodes_arr);
+            list_ptr->nodes_arr = nullptr;
+
+            list_ptr->cur_num_of_nodes = 0; 
+            list_ptr->max_num_of_nodes = 0;
+        }
+    }
+    else if(new_size >= list_ptr->max_num_of_nodes)
+    {   
+        list_realloc(list_ptr, new_size);
     }
 }
 
@@ -270,6 +392,8 @@ size_t delete_node(list* list_ptr, size_t node_index)
     }
     list_ptr->cur_num_of_nodes--;
 
+    check_is_linear(list_ptr);
+
     char* legend = create_legend(__func__ , 0, node_index, 0, node_value);
     create_graph_jpg(list_ptr, legend);
 }
@@ -320,9 +444,9 @@ size_t search_logical(list* list_ptr, int value)
 
 size_t get_phys_by_log(list* list_ptr, int logical_index)
 {
-    if(check_is_linear(list_ptr) != NON_LINEAR)
+    if(list_ptr->is_linear == true)
     {
-        return 0;
+        return logical_index;
     }
 
     int current_node = list_ptr->head_node;
@@ -348,7 +472,7 @@ size_t get_phys_by_log(list* list_ptr, int logical_index)
 
 size_t get_log_by_phys(list* list_ptr, int physical_index)
 {
-    if(check_is_linear(list_ptr) != NON_LINEAR)
+    if(list_ptr->is_linear == true)
     {
         return physical_index;
     }
@@ -371,8 +495,9 @@ size_t get_log_by_phys(list* list_ptr, int physical_index)
 
 size_t make_linear(list* list_ptr)
 {
-    if(check_is_linear(list_ptr) != NON_LINEAR)
+    if(list_ptr->max_num_of_nodes == true)
     {
+        printf("The list is already linear\n");
         return IS_LINEAR;
     }
 
@@ -408,9 +533,11 @@ size_t make_linear(list* list_ptr)
             exchange_stranger(list_ptr, phys_index, logc_index);
         }
     }
+
+    list_ptr->is_linear == true;
 }
 
-size_t check_is_linear(list* list_ptr) // checks the index for being linear
+void check_is_linear(list* list_ptr) // checks the index for being linear
 {   
     int node_phys_index = list_ptr->head_node;
     int node_logc_index = 0;
@@ -419,13 +546,13 @@ size_t check_is_linear(list* list_ptr) // checks the index for being linear
     {
         if(node_phys_index != node_logc_index)
         {   
-            return NON_LINEAR;
+            list_ptr->is_linear = false;
         }   
         node_phys_index = list_ptr->nodes_arr[node_phys_index].next;
         node_logc_index++;
     }
-    
-    return IS_LINEAR;
+
+    list_ptr->is_linear = true;
 }
 
 void exchange_stranger(list* list_ptr, int first_node, int second_node)
@@ -468,6 +595,7 @@ void exchange_stranger(list* list_ptr, int first_node, int second_node)
     list_ptr->nodes_arr[first_node].next = second_next;
     list_ptr->nodes_arr[first_node].prev = second_prev;
 
+    check_is_linear(list_ptr);
     // char* legend = create_legend(__func__, first_node, first_value, second_node, second_value);
     // create_graph_jpg(list_ptr, legend);
 }
@@ -504,6 +632,7 @@ void exchange_neighbor(list* list_ptr, int first_node, int second_node)
     list_ptr->nodes_arr[first_node].next = second_next;
     list_ptr->nodes_arr[first_node].prev = second_node;
 
+    check_is_linear(list_ptr);
     // char* legend = create_legend(__func__, first_node, first_value, second_node, second_value);
     // create_graph_jpg(list_ptr, legend);
 }
@@ -538,6 +667,8 @@ void put_to_free(list* list_ptr, int first_logical_index, int first_phys_index)
     {
         list_ptr->head_node = first_logical_index;
     }
+
+    check_is_linear(list_ptr);
 }
 
 size_t get_prev_free(list* list_ptr, int this_free_index)
@@ -603,6 +734,7 @@ size_t put_head(list* list_ptr)
         list_ptr->head_node = first_node_id;
     }
 
+    check_is_linear(list_ptr);
     // create_graph_jpg(list_ptr, "put head");
 }
 
@@ -653,6 +785,7 @@ size_t put_tail(list* list_ptr)
         }
     }
 
+    check_is_linear(list_ptr);
     // create_graph_jpg(list_ptr, "put tail");
 }
 
@@ -675,15 +808,16 @@ void change_head_tail(list* list_ptr, int head_id, int tail_id)
     list_ptr->head_node = tail_id;
     list_ptr->tail_node = head_id;
 
+    check_is_linear(list_ptr);
     // create_graph_jpg(list_ptr, "change_head_tail");
 }
 
-size_t create_linear(list* list_ptr)
+void create_linear(list* list_ptr)
 {
-    if(check_is_linear(list_ptr) == IS_LINEAR)
+    if(list_ptr->is_linear == true)
     {
-        printf("LINEAR\n");
-        return IS_LINEAR;
+        printf("List is already linear\n");
+        return;
     }
 
     node* new_node_ptr = (node*)calloc(list_ptr->max_num_of_nodes, sizeof(node));
@@ -739,8 +873,6 @@ size_t create_linear(list* list_ptr)
 
     free(list_ptr->nodes_arr);
     list_ptr->nodes_arr = new_node_ptr;
-
+    list_ptr->is_linear == true;
     // create_graph_jpg(list_ptr, "create_linear_2");
 }
-
-
