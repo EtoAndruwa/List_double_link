@@ -1,12 +1,17 @@
 #include "List_double_link.h"
 
 #include <time.h>
+#include <float.h>
+#include <chrono>
+#include <iostream>
+
+using namespace std::chrono;
 
 int main()
 {
     list* list_str = nullptr;
 
-    list_str = list_ctor(10);
+    list_str = list_ctor(13);
     list_str->nodes_arr[0].value = 0;
     list_str->nodes_arr[1].value = 1;
     list_str->nodes_arr[2].value = 2;
@@ -14,28 +19,47 @@ int main()
     list_str->nodes_arr[4].value = 4;
     list_str->nodes_arr[5].value = 5;
     list_str->nodes_arr[6].value = 6;
+    list_str->nodes_arr[7].value = 7;
+    list_str->nodes_arr[8].value = 8;
+    list_str->nodes_arr[9].value = 9;
+    list_str->nodes_arr[10].value = 10;
+    list_str->nodes_arr[11].value = 11;
+    list_str->nodes_arr[12].value = 12;
 
-    list_str->head_node = 0;
-    list_str->tail_node = 6;
-    list_str->free_node = 7;
+    list_str->head_node = 5;
+    list_str->tail_node = 7;
+    list_str->free_node = -1;
 
-    list_str->nodes_arr[0].next = 3;
-    list_str->nodes_arr[1].next = 6;
-    list_str->nodes_arr[2].next = 4;
-    list_str->nodes_arr[3].next = 2;
-    list_str->nodes_arr[4].next = 5;
-    list_str->nodes_arr[5].next = 1;
-    list_str->nodes_arr[6].next = -1;
+    list_str->nodes_arr[0].next = 11;
+    list_str->nodes_arr[1].next = 4;
+    list_str->nodes_arr[2].next = 7;
+    list_str->nodes_arr[3].next = 6;
+    list_str->nodes_arr[4].next = 3;
+    list_str->nodes_arr[5].next = 0;
+    list_str->nodes_arr[6].next = 8;
+    list_str->nodes_arr[7].next = -1;
+    list_str->nodes_arr[8].next = 2;
+    list_str->nodes_arr[9].next = 1;
+    list_str->nodes_arr[10].next = 12;
+    list_str->nodes_arr[11].next = 10;
+    list_str->nodes_arr[12].next = 9;
 
-    list_str->nodes_arr[0].prev = -1;
-    list_str->nodes_arr[1].prev = 5;
-    list_str->nodes_arr[2].prev = 3;
-    list_str->nodes_arr[3].prev = 0;
-    list_str->nodes_arr[4].prev = 2;
-    list_str->nodes_arr[5].prev = 4;
-    list_str->nodes_arr[6].prev = 1;
 
-    list_str->cur_num_of_nodes = 7;
+    list_str->nodes_arr[0].prev = 5;
+    list_str->nodes_arr[1].prev = 9;
+    list_str->nodes_arr[2].prev = 8;
+    list_str->nodes_arr[3].prev = 4;
+    list_str->nodes_arr[4].prev = 1;
+    list_str->nodes_arr[5].prev = -1;
+    list_str->nodes_arr[6].prev = 3;
+    list_str->nodes_arr[7].prev = 2;
+    list_str->nodes_arr[8].prev = 6;
+    list_str->nodes_arr[9].prev = 12;
+    list_str->nodes_arr[10].prev = 11;
+    list_str->nodes_arr[11].prev = 0;
+    list_str->nodes_arr[12].prev = 10;
+
+    list_str->cur_num_of_nodes = 13;
 
     // push_after(list_str, 0 ,1);
     // push_after(list_str, 0 ,2);
@@ -45,7 +69,7 @@ int main()
     // push_after(list_str, 3 ,5);
     // push_after(list_str, 1 ,6);
 
-    create_graph_jpg(list_str, "asdas");
+    create_graph_jpg(list_str, "");
     // push_after(list_str, 0, 100);
     // push_after(list_str, 0, 200); // 1
     // push_before(list_str, 1, 300); // 2
@@ -57,15 +81,14 @@ int main()
     // delete_node(list_str, 0);
     // push_after(list_str, 3, 100);
 
-    clock_t start, end;
-    double cpu_time_used;
 
-    start = clock();
+    auto old = steady_clock::now();
     // make_linear(list_str);
     create_linear(list_str);
-    end = clock();
-    cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-    printf("\nTime of sorting: %f seconds\n", cpu_time_used);
+    auto cpu_time_used = steady_clock::now() - old;
+    
+    std::cout << duration_cast<milliseconds>(cpu_time_used).count() << "\n";
+    create_graph_jpg(list_str, "");
 
 
 

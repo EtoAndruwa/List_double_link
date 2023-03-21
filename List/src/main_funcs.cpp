@@ -468,8 +468,8 @@ void exchange_stranger(list* list_ptr, int first_node, int second_node)
     list_ptr->nodes_arr[first_node].next = second_next;
     list_ptr->nodes_arr[first_node].prev = second_prev;
 
-    char* legend = create_legend(__func__, first_node, first_value, second_node, second_value);
-    create_graph_jpg(list_ptr, legend);
+    // char* legend = create_legend(__func__, first_node, first_value, second_node, second_value);
+    // create_graph_jpg(list_ptr, legend);
 }
 
 void exchange_neighbor(list* list_ptr, int first_node, int second_node)
@@ -504,8 +504,8 @@ void exchange_neighbor(list* list_ptr, int first_node, int second_node)
     list_ptr->nodes_arr[first_node].next = second_next;
     list_ptr->nodes_arr[first_node].prev = second_node;
 
-    char* legend = create_legend(__func__, first_node, first_value, second_node, second_value);
-    create_graph_jpg(list_ptr, legend);
+    // char* legend = create_legend(__func__, first_node, first_value, second_node, second_value);
+    // create_graph_jpg(list_ptr, legend);
 }
 
 void put_to_free(list* list_ptr, int first_logical_index, int first_phys_index)
@@ -603,7 +603,7 @@ size_t put_head(list* list_ptr)
         list_ptr->head_node = first_node_id;
     }
 
-    create_graph_jpg(list_ptr, "put head");
+    // create_graph_jpg(list_ptr, "put head");
 }
 
 size_t put_tail(list* list_ptr)
@@ -653,7 +653,7 @@ size_t put_tail(list* list_ptr)
         }
     }
 
-    create_graph_jpg(list_ptr, "put tail");
+    // create_graph_jpg(list_ptr, "put tail");
 }
 
 void change_head_tail(list* list_ptr, int head_id, int tail_id)
@@ -675,13 +675,14 @@ void change_head_tail(list* list_ptr, int head_id, int tail_id)
     list_ptr->head_node = tail_id;
     list_ptr->tail_node = head_id;
 
-    create_graph_jpg(list_ptr, "change_head_tail");
+    // create_graph_jpg(list_ptr, "change_head_tail");
 }
 
 size_t create_linear(list* list_ptr)
 {
     if(check_is_linear(list_ptr) == IS_LINEAR)
     {
+        printf("LINEAR\n");
         return IS_LINEAR;
     }
 
@@ -739,7 +740,7 @@ size_t create_linear(list* list_ptr)
     free(list_ptr->nodes_arr);
     list_ptr->nodes_arr = new_node_ptr;
 
-    create_graph_jpg(list_ptr, "create_linear_2");
+    // create_graph_jpg(list_ptr, "create_linear_2");
 }
 
 
