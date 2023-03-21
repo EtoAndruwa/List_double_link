@@ -94,20 +94,15 @@ size_t print_node_data(list* list_ptr, char* file_name) // prints all datta abou
     if(list_ptr->free_node != -1)
     {
         int next_node_free = list_ptr->free_node;
-        printf("node_%d: list_ptr->nodes_arr[next_node_free].next = %d\n", next_node_free, list_ptr->nodes_arr[next_node_free].next);
         next_node_free = list_ptr->nodes_arr[next_node_free].next;
 
         while(next_node_free != -1)
         {
             fprintf(graph_txt, "\tnode_free_%d[shape = record, style=\"filled\" fillcolor=\"%s\", label =\" {<name> node_%d} | { <f0> prev = %d } |{<here> value = %d}| { <f1> next = %d } \"];\n", next_node_free, RED_BG_COLOR_DOT, next_node_free, list_ptr->nodes_arr[next_node_free].prev,
             list_ptr->nodes_arr[next_node_free].value, list_ptr->nodes_arr[next_node_free].next);
-
-            printf("node_%d: list_ptr->nodes_arr[next_node_free].next = %d\n", next_node_free, list_ptr->nodes_arr[next_node_free].next);
             next_node_free = list_ptr->nodes_arr[next_node_free].next;
         }
     }
-
-
     if(fclose(graph_txt) == EOF)
     {
         return ERR_TO_CLOSE_GRAPH_TXT;
@@ -214,8 +209,6 @@ size_t create_graph_jpg(list* list_ptr, char* legend) // prints all data about t
     file_name = nullptr;
     free(legend);
     legend = nullptr;
-
-
 
     number_of_images++;
 

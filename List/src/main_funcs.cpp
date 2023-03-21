@@ -322,8 +322,6 @@ size_t get_phys_by_log(list* list_ptr, int logical_index)
 {
     if(check_is_linear(list_ptr) != NON_LINEAR)
     {
-        // printf("\n\nIS LINEAR!\n\n");
-        // printf("get_phys_by_log: Node with logical id %d was found with physical id %d\n", logical_index, logical_index);
         return 0;
     }
 
@@ -335,7 +333,6 @@ size_t get_phys_by_log(list* list_ptr, int logical_index)
     {
         if(logical_id == logical_index)
         {
-            // printf("get_phys_by_log: Node with logical id %d was found with physical id %d\n", logical_index, current_node);
             return current_node;
             flag_found = 1;
         }
@@ -345,7 +342,6 @@ size_t get_phys_by_log(list* list_ptr, int logical_index)
 
     if(flag_found == 0)
     {
-        // printf("Node with logical id %d was not found\n", logical_index);
         return NODE_DOES_NOT_EXIST;
     }
 }
@@ -354,7 +350,6 @@ size_t get_log_by_phys(list* list_ptr, int physical_index)
 {
     if(check_is_linear(list_ptr) != NON_LINEAR)
     {
-        printf("get_log_by_phys: Node with physical id %d was found with logical id %d\n", physical_index, physical_index);
         return physical_index;
     }
 
@@ -365,14 +360,12 @@ size_t get_log_by_phys(list* list_ptr, int physical_index)
     {
         if(current_node == physical_index)
         {
-            printf("get_log_by_phys: Node with physical id %d was found with logical id %d\n", current_node, logical_id);
             return logical_id;
         }
         logical_id++;
         current_node = list_ptr->nodes_arr[current_node].next;
     }
 
-    printf("Node with physical id %d was not found\n", physical_index);
     return NODE_DOES_NOT_EXIST;
 }
 
@@ -385,25 +378,19 @@ size_t make_linear(list* list_ptr)
 
     if(list_ptr->tail_node == 0 && list_ptr->head_node == list_ptr->cur_num_of_nodes - 1)
     {
-        printf("1\n\n");
         change_head_tail(list_ptr, list_ptr->head_node, list_ptr->tail_node);
     }
     else if((list_ptr->tail_node < list_ptr->head_node || list_ptr->tail_node == 0) && (list_ptr->head_node != list_ptr->cur_num_of_nodes - 1))
     {
-        printf("2\n\n");
         put_tail(list_ptr);
         put_head(list_ptr);
     }
     else    
     {
-        printf("3\n\n");
         put_head(list_ptr);
         put_tail(list_ptr);
     }
 
-    create_graph_jpg(list_ptr, "No change in tail and head");
-
-    printf("4\n\n");
     for(size_t logc_index = 1; logc_index < list_ptr->cur_num_of_nodes - 1; logc_index++)
     {
         int phys_index = get_phys_by_log(list_ptr, logc_index);
@@ -442,7 +429,11 @@ size_t check_is_linear(list* list_ptr) // checks the index for being linear
 }
 
 void exchange_stranger(list* list_ptr, int first_node, int second_node)
-{
+{   
+    if(first_node == second_node)
+    {
+        return;
+    }
     int second_value = list_ptr->nodes_arr[second_node].value;
     int second_next = list_ptr->nodes_arr[second_node].next;
     int second_prev = list_ptr->nodes_arr[second_node].prev;
@@ -483,6 +474,10 @@ void exchange_stranger(list* list_ptr, int first_node, int second_node)
 
 void exchange_neighbor(list* list_ptr, int first_node, int second_node)
 {
+    if(first_node == second_node)
+    {
+        return;
+    }
     int second_value = list_ptr->nodes_arr[second_node].value;
     int second_next  = list_ptr->nodes_arr[second_node].next;
     int second_prev  = list_ptr->nodes_arr[second_node].prev;
@@ -614,12 +609,10 @@ size_t put_head(list* list_ptr)
 size_t put_tail(list* list_ptr)
 {
     int max_node_id = list_ptr->cur_num_of_nodes - 1;
-     printf("max_node_id: %d\n\n", max_node_id);
     int second_node = get_log_by_phys(list_ptr, max_node_id); // if the node is free one
 
     if(max_node_id == list_ptr->tail_node)
     {
-        printf("HERE2\n\n");
         return 0;
     }
     else if(second_node == NODE_DOES_NOT_EXIST) // is not free
@@ -682,6 +675,6 @@ void change_head_tail(list* list_ptr, int head_id, int tail_id)
     list_ptr->head_node = tail_id;
     list_ptr->tail_node = head_id;
 
-
     create_graph_jpg(list_ptr, "change_head_tail");
 }
+
