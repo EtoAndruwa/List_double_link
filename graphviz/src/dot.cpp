@@ -455,9 +455,13 @@ char* create_legend(const char* func_name, int first_node_id, int first_node_val
     {
         sprintf(legend, "Node_%d with value = %d was pushed before the Node_%d with value %d", first_node_id, first_node_val, second_node_id, second_node_val);
     }
-    else if(strcmp(func_name, "exchange_nodes") == 0)
+    else if(strcmp(func_name, "exchange_neighbor") == 0)
     {
-        sprintf(legend, "Node_%d with value = %d was exchanged with the Node_%d with value %d", first_node_id, first_node_val, second_node_id, second_node_val);
+        sprintf(legend, "Node_%d with value = %d was exchanged with the NEIGHBOR Node_%d with value %d", first_node_id, first_node_val, second_node_id, second_node_val);
+    }
+    else if(strcmp(func_name, "exchange_stranger") == 0)
+    {
+        sprintf(legend, "Node_%d with value = %d was exchanged with the STRANGER Node_%d with value %d", first_node_id, first_node_val, second_node_id, second_node_val);
     }
     else
     {

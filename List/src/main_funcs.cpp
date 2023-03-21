@@ -322,8 +322,8 @@ size_t get_phys_by_log(list* list_ptr, int logical_index)
 {
     if(check_is_linear(list_ptr) != NON_LINEAR)
     {
-        printf("\n\nIS LINEAR!\n\n");
-        printf("get_phys_by_log: Node with logical id %d was found with physical id %d\n", logical_index, logical_index);
+        // printf("\n\nIS LINEAR!\n\n");
+        // printf("get_phys_by_log: Node with logical id %d was found with physical id %d\n", logical_index, logical_index);
         return 0;
     }
 
@@ -335,7 +335,7 @@ size_t get_phys_by_log(list* list_ptr, int logical_index)
     {
         if(logical_id == logical_index)
         {
-            printf("get_phys_by_log: Node with logical id %d was found with physical id %d\n", logical_index, current_node);
+            // printf("get_phys_by_log: Node with logical id %d was found with physical id %d\n", logical_index, current_node);
             return current_node;
             flag_found = 1;
         }
@@ -345,7 +345,7 @@ size_t get_phys_by_log(list* list_ptr, int logical_index)
 
     if(flag_found == 0)
     {
-        printf("Node with logical id %d was not found\n", logical_index);
+        // printf("Node with logical id %d was not found\n", logical_index);
         return NODE_DOES_NOT_EXIST;
     }
 }
@@ -385,24 +385,43 @@ size_t make_linear(list* list_ptr)
 
     if(list_ptr->tail_node == 0 && list_ptr->head_node == list_ptr->cur_num_of_nodes - 1)
     {
+        printf("1\n\n");
         change_head_tail(list_ptr, list_ptr->head_node, list_ptr->tail_node);
     }
     else if((list_ptr->tail_node < list_ptr->head_node || list_ptr->tail_node == 0) && (list_ptr->head_node != list_ptr->cur_num_of_nodes - 1))
     {
+        printf("2\n\n");
         put_tail(list_ptr);
         put_head(list_ptr);
     }
     else    
     {
+        printf("3\n\n");
         put_head(list_ptr);
         put_tail(list_ptr);
     }
-    for(size_t node_index = 1; node_index < list_ptr->cur_num_of_nodes - 1; node_index++)
+
+    create_graph_jpg(list_ptr, "No change in tail and head");
+
+    printf("4\n\n");
+    for(size_t logc_index = 1; logc_index < list_ptr->cur_num_of_nodes - 1; logc_index++)
     {
-        c(list_ptr, node_index);
+        int phys_index = get_phys_by_log(list_ptr, logc_index);
+
+        if(phys_index == NODE_DOES_NOT_EXIST)
+        {
+            put_to_free(list_ptr, logc_index, phys_index);
+        }
+        else if(list_ptr->nodes_arr[logc_index].prev == phys_index)
+        {
+            exchange_neighbor(list_ptr, phys_index, logc_index);
+        }
+        else
+        {
+            exchange_stranger(list_ptr, phys_index, logc_index);
+        }
     }
 }
-
 
 size_t check_is_linear(list* list_ptr) // checks the index for being linear
 {   
@@ -418,6 +437,8 @@ size_t check_is_linear(list* list_ptr) // checks the index for being linear
         node_phys_index = list_ptr->nodes_arr[node_phys_index].next;
         node_logc_index++;
     }
+    
+    return IS_LINEAR;
 }
 
 void exchange_stranger(list* list_ptr, int first_node, int second_node)
@@ -455,23 +476,6 @@ void exchange_stranger(list* list_ptr, int first_node, int second_node)
 
     list_ptr->nodes_arr[first_node].next = second_next;
     list_ptr->nodes_arr[first_node].prev = second_prev;
-    
-    if(first_node == list_ptr->head_node)
-    {
-        list_ptr->head_node = second_node;
-    }
-    if(first_node == list_ptr->tail_node)
-    {
-        list_ptr->tail_node = second_node;
-    }
-    if(second_node == list_ptr->head_node)
-    {
-        list_ptr->head_node = first_node;
-    }
-    if(second_node == list_ptr->tail_node)
-    {
-        list_ptr->tail_node = first_node;
-    }
 
     char* legend = create_legend(__func__, first_node, first_value, second_node, second_value);
     create_graph_jpg(list_ptr, legend);
@@ -480,11 +484,12 @@ void exchange_stranger(list* list_ptr, int first_node, int second_node)
 void exchange_neighbor(list* list_ptr, int first_node, int second_node)
 {
     int second_value = list_ptr->nodes_arr[second_node].value;
-    int second_next = list_ptr->nodes_arr[second_node].next;
-    int second_prev = list_ptr->nodes_arr[second_node].prev;
+    int second_next  = list_ptr->nodes_arr[second_node].next;
+    int second_prev  = list_ptr->nodes_arr[second_node].prev;
 
-    int first_prev = list_ptr->nodes_arr[first_node].prev;
-    int first_next = list_ptr->nodes_arr[first_node].next;
+    int first_prev  = list_ptr->nodes_arr[first_node].prev;
+    int first_next  = list_ptr->nodes_arr[first_node].next;
+    int first_value = list_ptr->nodes_arr[first_node].value;
 
     list_ptr->nodes_arr[second_node].value = list_ptr->nodes_arr[first_node].value;
     list_ptr->nodes_arr[first_node].value = second_value;
@@ -503,25 +508,9 @@ void exchange_neighbor(list* list_ptr, int first_node, int second_node)
 
     list_ptr->nodes_arr[first_node].next = second_next;
     list_ptr->nodes_arr[first_node].prev = second_node;
-    
-    if(first_node == list_ptr->head_node)
-    {
-        list_ptr->head_node = second_node;
-    }
-    if(first_node == list_ptr->tail_node)
-    {
-        list_ptr->tail_node = second_node;
-    }
-    if(second_node == list_ptr->head_node)
-    {
-        list_ptr->head_node = first_node;
-    }
-    if(first_node == list_ptr->tail_node)
-    {
-        list_ptr->tail_node = first_node;
-    }
 
-    create_graph_jpg(list_ptr, "exchange neighbor");
+    char* legend = create_legend(__func__, first_node, first_value, second_node, second_value);
+    create_graph_jpg(list_ptr, legend);
 }
 
 void put_to_free(list* list_ptr, int first_logical_index, int first_phys_index)
@@ -625,10 +614,12 @@ size_t put_head(list* list_ptr)
 size_t put_tail(list* list_ptr)
 {
     int max_node_id = list_ptr->cur_num_of_nodes - 1;
+     printf("max_node_id: %d\n\n", max_node_id);
     int second_node = get_log_by_phys(list_ptr, max_node_id); // if the node is free one
 
     if(max_node_id == list_ptr->tail_node)
     {
+        printf("HERE2\n\n");
         return 0;
     }
     else if(second_node == NODE_DOES_NOT_EXIST) // is not free
