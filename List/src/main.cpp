@@ -46,6 +46,8 @@ int main()
     // std::cout << duration_cast<milliseconds>(cpu_time_used).count() << "\n";
 
     list_resize(list_str, 20);
+    list_resize(list_str, 10);
+    list_resize(list_str, 1);
 
     create_graph_jpg(list_str, "");
 

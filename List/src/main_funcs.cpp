@@ -340,6 +340,8 @@ size_t list_resize(list* list_ptr, size_t new_size)
     {   
         list_realloc(list_ptr, new_size);
     }
+
+    create_graph_jpg(list_ptr, "resize");
 }
 
 size_t delete_node(list* list_ptr, size_t node_index)
