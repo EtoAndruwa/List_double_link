@@ -45,7 +45,7 @@ int main()
     // auto cpu_time_used = steady_clock::now() - old;
     // std::cout << duration_cast<milliseconds>(cpu_time_used).count() << "\n";
 
-    list_resize(list_str, 9);
+    list_resize(list_str, 20);
 
     create_graph_jpg(list_str, "");
 
