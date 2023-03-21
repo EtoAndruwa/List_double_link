@@ -45,7 +45,7 @@ int main()
     // push_after(list_str, 3 ,5);
     // push_after(list_str, 1 ,6);
 
-    create_graph_jpg(list_str, "");
+    create_graph_jpg(list_str, "asdas");
     // push_after(list_str, 0, 100);
     // push_after(list_str, 0, 200); // 1
     // push_before(list_str, 1, 300); // 2
@@ -61,10 +61,18 @@ int main()
     double cpu_time_used;
 
     start = clock();
-    make_linear(list_str);
+    // make_linear(list_str);
+    create_linear(list_str);
     end = clock();
     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
     printf("\nTime of sorting: %f seconds\n", cpu_time_used);
+
+
+
+
+
+    // printf("get_log_by_phys: %d\n", get_log_by_phys(list_str, 1));
+    // printf("get_phys_by_log: %d\n", get_phys_by_log(list_str, 2));
     // push_after(list_str, 2, 400);
     // exchange_neighbor(list_str, 1, 2);
     // exchange_neighbor(list_str, 2, 1);

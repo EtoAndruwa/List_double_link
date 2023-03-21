@@ -88,4 +88,6 @@ size_t put_head(list* list_ptr);
 
 void change_head_tail(list* list_ptr, int head_id, int tail_id);
 
+size_t create_linear(list* list_ptr);
+
 #endif

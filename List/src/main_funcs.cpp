@@ -678,3 +678,68 @@ void change_head_tail(list* list_ptr, int head_id, int tail_id)
     create_graph_jpg(list_ptr, "change_head_tail");
 }
 
+size_t create_linear(list* list_ptr)
+{
+    if(check_is_linear(list_ptr) == IS_LINEAR)
+    {
+        return IS_LINEAR;
+    }
+
+    node* new_node_ptr = (node*)calloc(list_ptr->max_num_of_nodes, sizeof(node));
+
+    new_node_ptr[0].prev  = -1;
+    new_node_ptr[0].value = list_ptr->nodes_arr[list_ptr->head_node].value;
+    new_node_ptr[0].next  = 1;
+
+    int last_node_id = list_ptr->cur_num_of_nodes - 1;
+
+    new_node_ptr[last_node_id].prev  = last_node_id -1;
+    new_node_ptr[last_node_id].value = list_ptr->nodes_arr[list_ptr->tail_node].value;
+    new_node_ptr[last_node_id].next  = -1;
+
+    list_ptr->head_node = 0;
+    list_ptr->tail_node = last_node_id;
+
+    if(list_ptr->free_node != -1)
+    {
+        list_ptr->free_node = list_ptr->cur_num_of_nodes;
+    }
+
+    for(size_t i = list_ptr->cur_num_of_nodes; i < list_ptr->max_num_of_nodes; i++)
+    {
+        if(i == (list_ptr->max_num_of_nodes - 1))
+        {
+
+            new_node_ptr[i].next  = -1;
+            new_node_ptr[i].prev  = -1;
+            new_node_ptr[i].value = POISON;
+        }
+        else
+        {
+            new_node_ptr[i].next  = i + 1;
+            new_node_ptr[i].prev  = -1;
+            new_node_ptr[i].value = POISON;
+        }
+    }
+
+    for(size_t node_index = 1; node_index < last_node_id; node_index++)
+    {
+        int phys_id = get_phys_by_log(list_ptr, node_index);
+        int phys_next = node_index + 1;
+        int phys_prev = node_index - 1;
+
+        new_node_ptr[node_index].next = node_index + 1;
+        new_node_ptr[node_index].prev = node_index - 1;
+        new_node_ptr[node_index].value = list_ptr->nodes_arr[phys_id].value;
+
+        new_node_ptr[phys_next].prev = node_index;
+        new_node_ptr[phys_prev].next = node_index;
+    }
+
+    free(list_ptr->nodes_arr);
+    list_ptr->nodes_arr = new_node_ptr;
+
+    create_graph_jpg(list_ptr, "create_linear_2");
+}
+
+
