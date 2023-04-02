@@ -5,22 +5,24 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "../../graphviz/src/graphviz.h"
-#include "../../graphviz/src/debugger.h"
-#include "struct.h"
-#include <chrono>
-#include <iostream>
-#include <stdbool.h>
+
+#include "../../graphviz/src/graphviz.h" // The local path to the graphviz lib header
+#include "../../graphviz/src/debugger.h" // The local path to the debugger
+#include "struct.h"                      // 
+
+// #include <chrono>    Included in order to check the time use of list sort
+// #include <iostream>  Included in order to check the time use of list sort
+// #include <stdbool.h> Included in order to check the time use of list sort 
 
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-#define DEF_FUNC_NAME __func__  //
-#define DEF_FUNC_LINE __LINE__  //
-#define DEF_FUNC_FILE __FILE__  //
+#define DEF_FUNC_NAME __func__  // This macro is used in order to get the name of the called function
+#define DEF_FUNC_LINE __LINE__  // This macro is used in order to get the line from which the function was called
+#define DEF_FUNC_FILE __FILE__  // This macro is used in order to get the file name from which the function was called
 
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-static const char* FILE_DUMP_NAME = "dump_log.txt"; // 
+static const char* FILE_DUMP_NAME = "dump_log.txt"; // The name of the dump log file, can be changed
 
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -38,208 +40,109 @@ enum error_codes
 
 enum return_code
 {
-    REALLOC_TRUE         = 1,
-    REALLOC_FALSE        = 2,
-    IS_LINEAR            = 3,
-    NODE_DOES_NOT_EXIST  = -4,
-    NON_LINEAR           = 5,
+    REALLOC_TRUE         =  1,
+    REALLOC_FALSE        =  2,
+    IS_LINEAR            =  3,
+    NODE_DOES_NOT_EXIST  = -4, // Is negative in order not confuse the existing node id with enum return
+    NON_LINEAR           =  5,
 };
 
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 /**
- * @brief 
+ * @brief Creates the list's struct and initializes element of the list
  * 
- * @param number_of_nodes 
- * @return list* 
+ * @param number_of_nodes The number of the elements in the list in total
+ * @return list* The pointer to the list struct
  */
-list*  list_ctor(size_t number_of_nodes);
+list* list_ctor(size_t number_of_nodes);
 
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+/**
+ * @brief Pushes the new node after the existing one
+ * 
+ * @param list_str The pointer to the list struct
+ * @param node_index The physical index of the node after which the new node will be pushed
+ * @param value The value of the node
+ */
+void push_after(list* list_str, size_t node_index, node_val_type value);
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 /**
  * @brief 
  * 
  * @param list_str 
- * @param node_index 
- * @param value 
  */
-void   push_after(list* list_str, size_t node_index, node_val_type value);
+void list_dtor(list* list_str);
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-/**
- * @brief 
- * 
- * @param list_str 
- */
-void   list_dtor(list* list_str);
-/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-/**
- * @brief 
- * 
- * @param list_ptr 
- * @return size_t 
- */
 size_t list_realloc(list* list_ptr, size_t new_size);
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-/**
- * @brief 
- * 
- * @param list_ptr 
- * @param node_index 
- * @param value 
- */
-void   push_before(list* list_ptr, size_t node_index, node_val_type value);
+
+void push_before(list* list_ptr, size_t node_index, node_val_type value);
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-/**
- * @brief 
- * 
- * @param list_ptr 
- * @param value 
- * @return size_t 
- */
+
 size_t search_physical(list* list_ptr, int value);
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-/**
- * @brief 
- * 
- * @param list_ptr 
- * @param value 
- * @return size_t 
- */
+
 size_t search_logical(list* list_ptr, int value);
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-/**
- * @brief Get the phys by log object
- * 
- * @param list_ptr 
- * @param logical_index 
- * @return size_t 
- */
+
 size_t get_phys_by_log(list* list_ptr, int logical_index);
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-/**
- * @brief Get the log by phys object
- * 
- * @param list_ptr 
- * @param physical_index 
- * @return size_t 
- */
 size_t get_log_by_phys(list* list_ptr, int physical_index);
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-/**
- * @brief 
- * 
- * @param list_ptr 
- * @return size_t 
- */
 void check_is_linear(list* list_ptr);
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-/**
- * @brief Get the prev free object
- * 
- * @param list_ptr 
- * @param this_free_index 
- * @return size_t 
- */
 size_t get_prev_free(list* list_ptr, int this_free_index);
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-/**
- * @brief 
- * 
- * @param list_ptr 
- * @return size_t 
- */
 size_t make_linear(list* list_ptr);
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-/**
- * @brief 
- * 
- * @param list_ptr 
- * @param first_logical_index 
- * @param first_phys_index 
- */
 void put_to_free(list* list_ptr, int first_logical_index, int first_phys_index);
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-/**
- * @brief 
- * 
- * @param list_ptr 
- * @param first_logical_index 
- * @param first_node_phys 
- */
 void put_to_free(list* list_ptr, int first_logical_index, int first_node_phys);
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-/**
- * @brief 
- * 
- * @param list_ptr 
- * @return size_t 
- */
 size_t put_tail(list* list_ptr);
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-/**
- * @brief 
- * 
- * @param list_ptr 
- * @param first_node 
- * @param second_node 
- */
+
 void exchange_neighbor(list* list_ptr, int first_node, int second_node);
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-/**
- * @brief 
- * 
- * @param list_ptr 
- * @param first_node 
- * @param second_node 
- */
+
 void exchange_stranger(list* list_ptr, int first_node, int second_node);
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-/**
- * @brief 
- * 
- * @param list_ptr 
- * @return size_t 
- */
+
 size_t put_head(list* list_ptr);
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-/**
- * @brief 
- * 
- * @param list_ptr 
- * @param head_id 
- * @param tail_id 
- */
+
 void change_head_tail(list* list_ptr, int head_id, int tail_id);
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-/**
- * @brief Create a linear object
- * 
- * @param list_ptr 
- * @return size_t 
- */
+
 void create_linear(list* list_ptr);
 /*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-size_t list_resize(list* list_ptr, size_t new_size);
 
+size_t list_resize(list* list_ptr, size_t new_size);
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+const char* enum_to_string(size_t error_code);
+/*------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 #endif

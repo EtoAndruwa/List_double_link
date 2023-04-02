@@ -310,7 +310,14 @@ size_t list_resize(list* list_ptr, size_t new_size)
                     }
                 }
 
-                list_ptr->free_node = list_ptr->cur_num_of_nodes;
+                if(new_size == list_ptr->cur_num_of_nodes)
+                {
+                    list_ptr->free_node = -1;
+                }
+                else
+                {
+                    list_ptr->free_node = list_ptr->cur_num_of_nodes;
+                }
 
                 free(list_ptr->nodes_arr);
                 list_ptr->nodes_arr = new_node_arr;
@@ -798,20 +805,19 @@ void change_head_tail(list* list_ptr, int head_id, int tail_id)
     int head_next = list_ptr->nodes_arr[head_id].next;
 
     list_ptr->nodes_arr[tail_id].value = list_ptr->nodes_arr[head_id].value;
-    list_ptr->nodes_arr[tail_id].next = list_ptr->nodes_arr[head_id].next;
-    list_ptr->nodes_arr[tail_id].prev = -1;
+    list_ptr->nodes_arr[tail_id].next  = list_ptr->nodes_arr[head_id].next;
+    list_ptr->nodes_arr[tail_id].prev  = -1;
 
     list_ptr->nodes_arr[tail_prev].next = head_id;
     list_ptr->nodes_arr[head_next].prev = tail_id;
-    list_ptr->nodes_arr[head_id].value = tail_val;
-    list_ptr->nodes_arr[head_id].prev = tail_prev;
-    list_ptr->nodes_arr[head_id].next = -1;
+    list_ptr->nodes_arr[head_id].value  = tail_val;
+    list_ptr->nodes_arr[head_id].prev   = tail_prev;
+    list_ptr->nodes_arr[head_id].next   = -1;
 
     list_ptr->head_node = tail_id;
     list_ptr->tail_node = head_id;
 
     check_is_linear(list_ptr);
-    // create_graph_jpg(list_ptr, "change_head_tail");
 }
 
 void create_linear(list* list_ptr)
@@ -859,9 +865,12 @@ void create_linear(list* list_ptr)
         }
     }
 
+    // Node* node = list_ptr->
+
     for(size_t node_index = 1; node_index < last_node_id; node_index++)
     {
-        int phys_id = get_phys_by_log(list_ptr, node_index);
+        int phys_id = get_phys_by_log(list_ptr, node_index); //!!!!здесь идти по head и ставить на правильные места !!!!
+
         int phys_next = node_index + 1;
         int phys_prev = node_index - 1;
 

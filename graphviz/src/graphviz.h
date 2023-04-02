@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "../config/dot_config.h"
 #include "../../List/src/List_double_link.h"
 #include "../../List/src/struct.h"
@@ -14,8 +15,16 @@
 
 enum error_codes_dot
 {
+    RETURN_OK              = 0,
     ERR_TO_OPEN_GRAPH_TXT  = 1,
     ERR_TO_CLOSE_GRAPH_TXT = 2, 
+    ERR_TO_OPEN_HTML       = 3,
+    ERR_TO_CLOSE_HTML      = 4,
+    ERR_TO_CALLOC_LEGEND   = 5,
+    ERR_STRTOK_NULL_PTR    = 6,
+    ERR_TO_OPEN_IMAGE_LST  = 7,
+    ERR_TO_CLOSE_IMAGE_LST = 8,
+    ERR_TO_CALLOC_BUFFER   = 9, 
 };
 
 
