@@ -2,7 +2,7 @@
 
 static size_t number_of_images = 0; // The global variable which is used in order to count the total number of image files
 
-size_t graph_start(char* file_name) // OK
+int graph_start(char* file_name) // OK
 {
     FILE* graph_txt = fopen(file_name, "a+");
     if(graph_txt == nullptr)
@@ -31,7 +31,7 @@ size_t graph_start(char* file_name) // OK
     return RETURN_OK;
 }
 
-size_t graph_end(char* file_name) // OK
+int graph_end(char* file_name) // OK
 {
     FILE* graph_txt = fopen(file_name, "a+");
     if(graph_txt == nullptr)
@@ -56,7 +56,7 @@ size_t graph_end(char* file_name) // OK
     return RETURN_OK;
 }
 
-size_t html_end(char* file_name) // OK
+int html_end(char* file_name) // OK
 {
     FILE* graph_txt = fopen(file_name, "a+");
     if(graph_txt == nullptr)
@@ -76,7 +76,7 @@ size_t html_end(char* file_name) // OK
     return RETURN_OK;
 }
 
-size_t hmtl_start(char* file_name) // OK
+int hmtl_start(char* file_name) // OK
 {
     FILE* graph_txt = fopen(file_name, "a+");
     if(graph_txt == nullptr)
@@ -96,7 +96,7 @@ size_t hmtl_start(char* file_name) // OK
     return RETURN_OK;
 }
 
-size_t print_node_data(list* list_ptr, char* file_name) 
+int print_node_data(list* list_ptr, char* file_name) // OK
 {
     FILE* graph_txt = fopen(file_name, "a+");
     if(graph_txt == nullptr)
@@ -127,6 +127,7 @@ size_t print_node_data(list* list_ptr, char* file_name)
         {
             fprintf(graph_txt, "\tnode_free_%d[shape = record, style=\"filled\" fillcolor=\"%s\", label =\" {<name> node_%d} | { <f0> prev = %d } |{<here> value = %d}| { <f1> next = %d } \"];\n", next_node_free, RED_BG_COLOR_DOT, next_node_free, list_ptr->nodes_arr[next_node_free].prev,
             list_ptr->nodes_arr[next_node_free].value, list_ptr->nodes_arr[next_node_free].next);
+
             next_node_free = list_ptr->nodes_arr[next_node_free].next;
         }
     }
@@ -139,11 +140,12 @@ size_t print_node_data(list* list_ptr, char* file_name)
     return RETURN_OK;
 }
 
-size_t print_node_links(list* list_ptr, char* file_name) // prints all the links of the list
+int print_node_links(list* list_ptr, char* file_name) // OK
 {
     FILE* graph_txt = fopen(file_name, "a+");
     if(graph_txt == nullptr)
     {
+        ERROR_MESSAGE(stderr, ERR_TO_OPEN_GRAPH_TXT)
         return ERR_TO_OPEN_GRAPH_TXT;
     }
 
@@ -198,43 +200,150 @@ size_t print_node_links(list* list_ptr, char* file_name) // prints all the links
 
     if(fclose(graph_txt) == EOF)
     {
+        ERROR_MESSAGE(stderr, ERR_TO_CLOSE_GRAPH_TXT)
         return ERR_TO_CLOSE_GRAPH_TXT;
     }
 
     return RETURN_OK;
 }
 
-size_t create_graph_jpg(list* list_ptr, char* legend) // prints all data about the list into the .txt file
+int create_graph_jpg(list* list_ptr, char* legend) // OK
 {
+    int error_code = 0;
+
     char int_str_equivalent[11] = {};
-    sprintf(int_str_equivalent, "%d_%s", number_of_images, "logical");
+    int written_chars = sprintf(int_str_equivalent, "%d_%s", number_of_images, "logical");
+    if(written_chars <= 0)
+    {
+        ERROR_MESSAGE(stderr, ERR_TO_SPRINTF_BUFF);
+        return ERR_TO_SPRINTF_BUFF; 
+    }
+
     char* file_name = cat_file_directory(OUTPUT_NAME, "", int_str_equivalent);
+    if(file_name == nullptr)
+    {
+        ERROR_MESSAGE(stderr, ERR_MAKE_NEW_FILE_NAME);
+        return ERR_MAKE_NEW_FILE_NAME; 
+    }
+
     char* dir_file_name = cat_file_directory(file_name, TXT_FOLDER, INPUT_FORMAT);
+    if(dir_file_name == nullptr)
+    {
+        ERROR_MESSAGE(stderr, ERR_MAKE_DIR_NEW_FILE);
+        return ERR_MAKE_DIR_NEW_FILE; 
+    }
 
-    graph_start(dir_file_name);
-    print_legend(legend, dir_file_name);
-    print_node_data(list_ptr, dir_file_name);
-    print_node_links(list_ptr, dir_file_name);
-    graph_end(dir_file_name);
+    error_code = graph_start(dir_file_name);
+    if(error_code != RETURN_OK)
+    {
+        ERROR_MESSAGE(stderr, error_code);
+        return error_code; 
+    }
 
-    system_dot(file_name);
+    error_code = print_legend(legend, dir_file_name);
+    if(error_code != RETURN_OK)
+    {
+        ERROR_MESSAGE(stderr, error_code);
+        return error_code; 
+    }
+
+    error_code = print_node_data(list_ptr, dir_file_name);
+    if(error_code != RETURN_OK)
+    {
+        ERROR_MESSAGE(stderr, error_code);
+        return error_code; 
+    }
+
+    error_code = print_node_links(list_ptr, dir_file_name);
+    if(error_code != RETURN_OK)
+    {
+        ERROR_MESSAGE(stderr, error_code);
+        return error_code; 
+    }
+
+    error_code = graph_end(dir_file_name);
+    if(error_code != RETURN_OK)
+    {
+        ERROR_MESSAGE(stderr, error_code);
+        return error_code; 
+    }
+
+    error_code = system_dot(file_name);
+    if(error_code != RETURN_OK)
+    {
+        ERROR_MESSAGE(stderr, error_code);
+        return error_code; 
+    }
+
     free(dir_file_name);
     dir_file_name = nullptr;
     free(file_name);
     file_name = nullptr;
 
     memset(int_str_equivalent, 0, 11);
-    sprintf(int_str_equivalent, "%d_%s", number_of_images, "physical");
+    written_chars = sprintf(int_str_equivalent, "%d_%s", number_of_images, "physical");
+    if(written_chars <= 0)
+    {
+        ERROR_MESSAGE(stderr, ERR_TO_SPRINTF_BUFF);
+        return ERR_TO_SPRINTF_BUFF; 
+    }
+
     file_name = cat_file_directory(OUTPUT_NAME, "", int_str_equivalent);
+    if(file_name == nullptr)
+    {
+        ERROR_MESSAGE(stderr, ERR_MAKE_NEW_FILE_NAME);
+        return ERR_MAKE_NEW_FILE_NAME; 
+    }
+
     dir_file_name = cat_file_directory(file_name, TXT_FOLDER, INPUT_FORMAT);
+    if(dir_file_name == nullptr)
+    {
+        ERROR_MESSAGE(stderr, ERR_MAKE_DIR_NEW_FILE);
+        return ERR_MAKE_DIR_NEW_FILE; 
+    }
 
-    graph_start(dir_file_name);
-    print_legend(legend, dir_file_name);
-    print_node_data_phys(list_ptr, dir_file_name);
-    print_node_links_phys(list_ptr, dir_file_name);
-    graph_end(dir_file_name);
+    error_code = graph_start(dir_file_name);
+    if(error_code != RETURN_OK)
+    {
+        ERROR_MESSAGE(stderr, error_code);
+        return error_code; 
+    }
 
-    system_dot(file_name);
+    error_code = print_legend(legend, dir_file_name);
+    if(error_code != RETURN_OK)
+    {
+        ERROR_MESSAGE(stderr, error_code);
+        return error_code; 
+    }
+
+    error_code = print_node_data_phys(list_ptr, dir_file_name);
+    if(error_code != RETURN_OK)
+    {
+        ERROR_MESSAGE(stderr, error_code);
+        return error_code; 
+    }
+
+    error_code = print_node_links_phys(list_ptr, dir_file_name);
+    if(error_code != RETURN_OK)
+    {
+        ERROR_MESSAGE(stderr, error_code);
+        return error_code; 
+    }
+
+    error_code = graph_end(dir_file_name);
+    if(error_code != RETURN_OK)
+    {
+        ERROR_MESSAGE(stderr, error_code);
+        return error_code; 
+    }
+
+    error_code = system_dot(file_name);
+    if(error_code != RETURN_OK)
+    {
+        ERROR_MESSAGE(stderr, error_code);
+        return error_code; 
+    }
+
     free(dir_file_name);
     dir_file_name = nullptr;
     free(file_name);
@@ -247,7 +356,7 @@ size_t create_graph_jpg(list* list_ptr, char* legend) // prints all data about t
     return RETURN_OK;
 }
 
-char* cat_file_directory(char* file_name, char* dir, char* format) // cats the file name, dir path and extension into the one string
+char* cat_file_directory(char* file_name, char* dir, char* format) // OK
 {
     size_t size_of_file_name    = strlen(file_name) + 1; // additional \0 in the end
     size_t size_of_dir_name     = strlen(dir) + 1;       // additional \0 in the end
@@ -257,7 +366,7 @@ char* cat_file_directory(char* file_name, char* dir, char* format) // cats the f
 
     if(dir_file_name == nullptr)
     {
-        ERROR_MESSAGE(stderr, 1)
+        ERROR_MESSAGE(stderr, ERR_CALLOC_DIR_FIL_NAM)
         return nullptr;
     }
 
@@ -268,13 +377,37 @@ char* cat_file_directory(char* file_name, char* dir, char* format) // cats the f
     return dir_file_name;
 }
 
-size_t create_html(char* file_name) // creates the whole html file at once
+int create_html(char* file_name) // OK
 {
     char* dir_file_name = cat_file_directory(file_name, DIR_TO_DUMPS, HTML);
 
-    hmtl_start(dir_file_name);
-    add_image_to_html(dir_file_name);
-    html_end(dir_file_name);
+    if(dir_file_name == nullptr)
+    {
+        ERROR_MESSAGE(stderr, ERR_CALLOC_DIR_FIL_NAM)
+        return ERR_CALLOC_DIR_FIL_NAM;
+    }
+
+    int error_code = hmtl_start(dir_file_name);
+    
+    if(error_code != 0)
+    {
+        ERROR_MESSAGE(stderr, error_code)
+        return error_code;
+    }
+
+    error_code = add_image_to_html(dir_file_name);
+    if(error_code != 0)
+    {
+        ERROR_MESSAGE(stderr, error_code)
+        return error_code;
+    }
+
+    error_code = html_end(dir_file_name);
+    if(error_code != 0)
+    {
+        ERROR_MESSAGE(stderr, error_code)
+        return error_code;
+    }
 
     free(dir_file_name);
     dir_file_name = nullptr;
@@ -282,13 +415,24 @@ size_t create_html(char* file_name) // creates the whole html file at once
     return RETURN_OK;
 }
 
-char* system_dot(char* file_name) // creates a dot function in order to call it automatically
+int system_dot(char* file_name) // OK
 {
     char* dot  = " dot ";
     char* flag = " -o ";
 
     char* txt_file = cat_file_directory(file_name, TXT_FOLDER, INPUT_FORMAT);
+    if(txt_file == nullptr)
+    {
+        ERROR_MESSAGE(stderr, ERR_TO_CAT_TXT)
+        return ERR_TO_CAT_TXT;
+    }
+
     char* jpg_file = cat_file_directory(file_name, IMAGE_FOLDER, OUTPUT_FORMAT);
+    if(jpg_file == nullptr)
+    {
+        ERROR_MESSAGE(stderr, ERR_TO_CAT_JPG)
+        return ERR_TO_CAT_JPG;
+    }
 
     size_t size_of_dot = strlen(dot) + 1;
     size_t size_of_txt_file = strlen(txt_file) + 1;
@@ -300,10 +444,13 @@ char* system_dot(char* file_name) // creates a dot function in order to call it 
 
     char* system_cmd = (char*)calloc(total_lenght , sizeof(char));
 
+    if(system_cmd == nullptr)
+    {
+        ERROR_MESSAGE(stderr, ERR_TO_SYSTEM_CMD)
+        return ERR_TO_SYSTEM_CMD;
+    }
+
     strcpy(system_cmd, dot);
-
-
-
 
     strcat(system_cmd, txt_file);
     strcat(system_cmd, OUTPUT_FORMAT_FLAG);
@@ -316,34 +463,60 @@ char* system_dot(char* file_name) // creates a dot function in order to call it 
     free(jpg_file);
     free(system_cmd);
 
+    char* file_with_exten = cat_file_directory(file_name, "", OUTPUT_FORMAT);
+    if(file_with_exten == nullptr)
+    {
+        ERROR_MESSAGE(stderr, ERR_TO_CAT_FILE_EXT)
+        return ERR_TO_CAT_FILE_EXT;
+    }
 
-    char* file_with_ext = cat_file_directory(file_name, "", OUTPUT_FORMAT);
+    int error_code = add_to_image_list(file_with_exten);
+    if(error_code != RETURN_OK)
+    {
+        ERROR_MESSAGE(stderr, error_code)
+        return error_code;
+    }
 
-    add_to_image_list(file_with_ext);
+    free(file_with_exten);
 
-    free(file_with_ext);
-    file_with_ext = nullptr;
+    file_with_exten = nullptr;
     txt_file = nullptr;
     jpg_file = nullptr;
     system_cmd = nullptr;
+
+    return RETURN_OK;
 }
 
-size_t add_to_image_list(char* file_name) // adds the path to the image into the image_list.file
+int add_to_image_list(char* file_name) // OK
 {
-    char* dir_file_name = cat_file_directory("image_list.txt", DIR_TO_DUMPS, "");
-    char* path_to_write = cat_file_directory(file_name, "../graph_dumps/images/", "");
+    char* dir_file_name = cat_file_directory(IMAGE_LIST_NAME, DIR_TO_DUMPS, "");
+    char* path_to_write = cat_file_directory(file_name, "../graph_dumps/images/", ""); 
 
-    FILE* graph_txt = fopen(dir_file_name, "a+");
-    if(graph_txt == nullptr)
+    if(dir_file_name == nullptr)
     {
-        ERROR_MESSAGE(stderr, 1);
+        ERROR_MESSAGE(stderr, ERR_PATH_TO_LST_FILE);
+        return ERR_PATH_TO_LST_FILE; 
     }
 
-    fprintf(graph_txt, "%s\n", path_to_write);
-
-    if(fclose(graph_txt) == EOF)
+    if(path_to_write == nullptr)
     {
-        ERROR_MESSAGE(stderr, 1);
+        ERROR_MESSAGE(stderr, ERR_PATH_OF_IMAGE);
+        return ERR_PATH_OF_IMAGE; 
+    }
+
+    FILE* image_list = fopen(dir_file_name, "a+");
+    if(image_list == nullptr)
+    {
+        ERROR_MESSAGE(stderr, ERR_TO_OPEN_IMAGE_LST);
+        return ERR_TO_OPEN_IMAGE_LST; 
+    }
+
+    fprintf(image_list, "%s\n", path_to_write);
+
+    if(fclose(image_list) == EOF)
+    {
+        ERROR_MESSAGE(stderr, ERR_TO_CLOSE_IMAGE_LST);
+        return ERR_TO_CLOSE_IMAGE_LST;
     }
 
     free(dir_file_name);
@@ -354,32 +527,48 @@ size_t add_to_image_list(char* file_name) // adds the path to the image into the
     return RETURN_OK;
 }
 
-size_t add_image_to_html(char* dir_file_name) // adds all images to the html at once
+int add_image_to_html(char* dir_file_name) // OK
 {
-    FILE* graph_txt = fopen(dir_file_name, "a+");
-    if(graph_txt == nullptr)
+    FILE* html_file = fopen(dir_file_name, "a+");
+    if(html_file == nullptr)
     {
-        ERROR_MESSAGE(stderr, 1);
-        return 1;
+        ERROR_MESSAGE(stderr, ERR_TO_OPEN_HTML);
+        return ERR_TO_OPEN_HTML;
     }
 
-    get_size_file();
     char* buffer = get_tokens_into_buf();
-    get_tokens(buffer, graph_txt);
-
-
-    if(fclose(graph_txt) == EOF)
+    if(buffer == nullptr)
     {
-        ERROR_MESSAGE(stderr, 1);
-        return 1;
+        ERROR_MESSAGE(stderr, ERR_EMPTY_BUFFER)
+        return ERR_EMPTY_BUFFER;
+    }
+
+    int error_code = get_tokens(buffer, html_file);
+    if(error_code != RETURN_OK)
+    {
+        ERROR_MESSAGE(stderr, error_code)
+        return error_code;
+    }
+
+    if(fclose(html_file) == EOF)
+    {
+        ERROR_MESSAGE(stderr, ERR_TO_CLOSE_HTML);
+        return ERR_TO_CLOSE_HTML;
     }
 
     return RETURN_OK;
 }
 
-char* get_tokens_into_buf() // reads all tokens into the buffer
+char* get_tokens_into_buf() // OK
 {
-    char* dir_file_name = cat_file_directory("image_list.txt", DIR_TO_DUMPS, "");
+    char* dir_file_name = cat_file_directory(IMAGE_LIST_NAME, DIR_TO_DUMPS, "");
+
+    if(dir_file_name == nullptr)
+    {
+        ERROR_MESSAGE(stderr, ERR_TO_OPEN_IMAGE_LST)
+        return nullptr;
+    }
+
     FILE* image_list = fopen(dir_file_name, "r");
     if(image_list == nullptr)
     {
@@ -388,9 +577,10 @@ char* get_tokens_into_buf() // reads all tokens into the buffer
     }
 
     size_t size_of_file = get_size_file(); // Gets the size of the file 
-    if(get_size_file() == )
+    if(size_of_file <= 0) 
     {
-
+        ERROR_MESSAGE(stderr, ERR_FILE_SIZE_PROBLEM)
+        return nullptr;
     }
 
     char* buffer_ptr = (char*)calloc(1, sizeof(char) * (size_of_file + 1));
@@ -402,6 +592,13 @@ char* get_tokens_into_buf() // reads all tokens into the buffer
 
     fread(buffer_ptr, sizeof(char), size_of_file, image_list); // Reads the whole text of the file to the allocated buffer
     buffer_ptr[size_of_file] = '\0'; // Makes from the buffer null-terminated string
+
+    int size_of_buffer = strlen(buffer_ptr);
+    if(size_of_buffer == 0)
+    {
+        ERROR_MESSAGE(stderr, ERR_EMPTY_BUFFER)
+        return nullptr;
+    }
 
     if(fclose(image_list) == EOF)
     {
@@ -415,9 +612,9 @@ char* get_tokens_into_buf() // reads all tokens into the buffer
     return buffer_ptr;
 }
 
-size_t get_size_file() // OK
+int get_size_file() // OK
 {
-    char* dir_file_name = cat_file_directory("image_list.txt", DIR_TO_DUMPS, "");
+    char* dir_file_name = cat_file_directory(IMAGE_LIST_NAME, DIR_TO_DUMPS, "");
     FILE* image_list    = fopen(dir_file_name, "r");
     if(image_list == nullptr)
     {
@@ -425,7 +622,12 @@ size_t get_size_file() // OK
         return ERR_TO_OPEN_IMAGE_LST;
     }
 
-    fseek(image_list, 0, SEEK_END);  // Puts the pointer inside the file_struct_ptr to the end of the file
+    if(fseek(image_list, 0, SEEK_END) != 0)  // Puts the pointer inside the file_struct_ptr to the end of the file
+    {
+        ERROR_MESSAGE(stderr, ERR_FSEEK_TO_START)
+        return ERR_FSEEK_TO_START;
+    }
+
     size_t size = ftell(image_list); // Get the size of the file_struct_ptr with '\r'!
 
     if(fclose(image_list) == EOF)
@@ -434,13 +636,24 @@ size_t get_size_file() // OK
         return ERR_TO_CLOSE_IMAGE_LST;
     }
 
+    if(size < 0)
+    {
+        ERROR_MESSAGE(stderr, ERR_TO_READ_FILE);
+        return ERR_TO_READ_FILE;
+    }
+    if(size == 0)
+    {
+        ERROR_MESSAGE(stderr, ERR_EMPTY_FILE);
+        return ERR_EMPTY_FILE;
+    }
+
     free(dir_file_name);
     dir_file_name = nullptr;
 
     return size;
 }
 
-size_t get_tokens(char* buffer, FILE* file_tpr) // OK
+int get_tokens(char* buffer, FILE* file_tpr) // OK
 {
     char* token = strtok(buffer," \n\r");
 
@@ -450,9 +663,9 @@ size_t get_tokens(char* buffer, FILE* file_tpr) // OK
         return ERR_STRTOK_NULL_PTR;
     }
 
-    while (token != NULL)
+    while(token != NULL)
     {
-        if(strstr(token, "logical") == nullptr) // Searches for the substring logic in the token
+        if(strstr(token, "logical") == nullptr) // Searches for the substring "logic" in the token
         {
             fprintf(file_tpr, "<div style =\"text-align: center;\"><h1>The image below %s</h1>\n", strstr(token, OUTPUT_NAME));
             fprintf(file_tpr, "<img src=\"%s\" alt=\"%s \"></div>\n", token, token);
@@ -460,13 +673,13 @@ size_t get_tokens(char* buffer, FILE* file_tpr) // OK
         token = strtok(NULL, " \n\r");
     }
 
-    free(buffer);
+    free(buffer); // Frees the buffer with tokens
     buffer = nullptr;
 
     return RETURN_OK;
 }
 
-size_t print_legend(char* legend_text, char* dir_file_name) // OK
+int print_legend(char* legend_text, char* dir_file_name) // OK
 {
     FILE* graph_txt = fopen(dir_file_name, "a+");
     if(graph_txt == nullptr)
@@ -532,7 +745,7 @@ char* create_legend(const char* func_name, int first_node_id, int first_node_val
     return legend;
 }
 
-size_t print_node_data_phys(list* list_ptr, char* dir_file_name) // OK
+int print_node_data_phys(list* list_ptr, char* dir_file_name) // OK
 {
     FILE* graph_txt = fopen(dir_file_name, "a+");
     if(graph_txt == nullptr)
@@ -580,7 +793,7 @@ size_t print_node_data_phys(list* list_ptr, char* dir_file_name) // OK
     return RETURN_OK;
 }
 
-size_t print_node_links_phys(list* list_ptr, char* dir_file_name) // OK
+int print_node_links_phys(list* list_ptr, char* dir_file_name) // OK
 {
     FILE* graph_txt = fopen(dir_file_name, "a+"); 
     if(graph_txt == nullptr)
