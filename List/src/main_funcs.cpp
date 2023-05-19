@@ -1,14 +1,5 @@
 #include "List_double_link.h"
 
-// size_t safe_exit(list* list_ptr, const char* FUNC_NAME, size_t FUNC_LINE, const char* FUNC_FILE, size_t error_code)
-// {
-//     list_ptr->error_code = error_code;
-//     printf("Error code: %ld (%s)\n", list_ptr->error_code, enum_to_string(list_ptr->error_code));
-//     list_dump(list_ptr, FUNC_NAME, FUNC_LINE, FUNC_FILE);
-//     list_dtor(list_ptr);
-//     return error_code);
-// }
-
 void push_after(list* list_ptr, size_t node_index, node_val_type value)
 {
     list_realloc(list_ptr, list_ptr->cur_num_of_nodes);
@@ -848,6 +839,7 @@ void create_linear(list* list_ptr)
         list_ptr->free_node = list_ptr->cur_num_of_nodes;
     }
 
+    // free array is initialized
     for(size_t i = list_ptr->cur_num_of_nodes; i < list_ptr->max_num_of_nodes; i++)
     {
         if(i == (list_ptr->max_num_of_nodes - 1))
@@ -865,25 +857,29 @@ void create_linear(list* list_ptr)
         }
     }
 
-    // Node* node = list_ptr->
+    node* node_ptr = &list_ptr->nodes_arr[list_ptr->nodes_arr[list_ptr->head_node].next];
+    int node_index = 1;
+    int phys_next  = 2;
+    int phys_prev  = 0;
 
-    for(size_t node_index = 1; node_index < last_node_id; node_index++)
+    while(node_index != list_ptr->tail_node)
     {
-        int phys_id = get_phys_by_log(list_ptr, node_index); //!!!!здесь идти по head и ставить на правильные места !!!!
+        phys_next = node_index + 1;
+        phys_prev = node_index - 1;
 
-        int phys_next = node_index + 1;
-        int phys_prev = node_index - 1;
-
-        new_node_ptr[node_index].next = node_index + 1;
-        new_node_ptr[node_index].prev = node_index - 1;
-        new_node_ptr[node_index].value = list_ptr->nodes_arr[phys_id].value;
+        new_node_ptr[node_index].next  = node_index + 1;
+        new_node_ptr[node_index].prev  = node_index - 1;
+        new_node_ptr[node_index].value = node_ptr->value;
 
         new_node_ptr[phys_next].prev = node_index;
         new_node_ptr[phys_prev].next = node_index;
+
+        node_index++;
+        node_ptr = &list_ptr->nodes_arr[node_ptr->next];
     }
 
     free(list_ptr->nodes_arr);
     list_ptr->nodes_arr = new_node_ptr;
     list_ptr->is_linear == true;
-    // create_graph_jpg(list_ptr, "create_linear_2");
+    create_graph_jpg(list_ptr, "create_linear was called");
 }
